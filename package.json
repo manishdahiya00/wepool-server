@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/manishdahiya00/AuthService/issues"
   },
-  "homepage": "https://github.com/manishdahiya00/AuthService#readme"
+  "homepage": "https://github.com/manishdahiya00/AuthService#readme",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
 }
