@@ -7,7 +7,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   {
-    ignores: ["dist", "node_modules", "eslint.config.mjs", "logs"],
+    ignores: ["dist", "node_modules", "eslint.config.mjs", "logs", "jest.config.js"],
   },
   {
     languageOptions: {
@@ -17,6 +17,7 @@ export default tseslint.config(
       },
     },
     rules: {
+      "@typescript-eslint/no-misused-promises": "off",
       "no-unused-vars": "error"
     },
   },
