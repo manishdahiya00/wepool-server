@@ -18,7 +18,8 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/no-misused-promises": "off",
-      "no-unused-vars": "error"
+      "no-unused-vars": "error",
+      "@typescript-eslint/no-any": "off",
     },
   },
 );

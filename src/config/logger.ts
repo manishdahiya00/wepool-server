@@ -1,39 +1,40 @@
 import winston from "winston";
-import { Config } from ".";
+import DailyRotateFile from "winston-daily-rotate-file";
 
 const logger = winston.createLogger({
     level: "info",
-    format: winston.format.json(),
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+    ),
     defaultMeta: { service: "auth-service" },
     transports: [
         new winston.transports.Console({
             format: winston.format.combine(
                 winston.format.colorize(),
                 winston.format.timestamp(),
-                winston.format.json(),
-                winston.format.simple(),
+                winston.format.printf(({ level, message, timestamp }) => {
+                    return `[${String(timestamp)}] ${level}: ${String(message)}`;
+                }),
             ),
-            silent: Config.NODE_ENV === "test",
         }),
-        new winston.transports.File({
+
+        new DailyRotateFile({
             dirname: "logs",
-            filename: "error.log",
+            filename: "error-%DATE%.log",
+            datePattern: "YYYY-MM-DD",
             level: "error",
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json(),
-            ),
-            silent: Config.NODE_ENV === "test",
+            maxFiles: "30d",
+            format: winston.format.json(),
         }),
-        new winston.transports.File({
+
+        new DailyRotateFile({
             dirname: "logs",
-            filename: "app.log",
+            filename: "app-%DATE%.log",
+            datePattern: "YYYY-MM-DD",
             level: "info",
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json(),
-            ),
-            silent: Config.NODE_ENV === "test",
+            maxFiles: "30d",
+            format: winston.format.json(),
         }),
     ],
 });
