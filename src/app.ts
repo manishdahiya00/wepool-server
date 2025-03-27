@@ -15,7 +15,7 @@ app.get("/health", (_req, res) => {
     });
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
