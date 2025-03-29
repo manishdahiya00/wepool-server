@@ -65,3 +65,13 @@ export async function updateUserPassword(userId: string, password: string) {
         throw createHttpError(500, "Error updating password");
     }
 }
+export async function findUserBySecurityToken(token: string) {
+    try {
+        return await db.user.findFirst({
+            where: { securityToken: { equals: token, mode: "insensitive" } },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error finding user by security token");
+    }
+}
