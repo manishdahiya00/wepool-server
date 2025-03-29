@@ -10,7 +10,9 @@ import {
 import logger from "../config/logger";
 import {
     createUser,
+    deleteAllUsers,
     findUserByEmail,
+    updateUser,
     updateUserOTP,
     updateUserPassword,
     updateUserSecurityToken,
@@ -56,7 +58,36 @@ export const register = async (req: Request, res: Response) => {
         }
 
         const isExistingUser = await findUserByEmail(email);
+
         if (isExistingUser) {
+            if (!isExistingUser?.isVerified) {
+                const hashedPass = await hash(password);
+                isExistingUser.email = email;
+                isExistingUser.password = hashedPass;
+                isExistingUser.fullName = fullName;
+                isExistingUser.deviceId = deviceId;
+                isExistingUser.deviceType = deviceType;
+                isExistingUser.deviceName = deviceName;
+                isExistingUser.dob = dob;
+                isExistingUser.mobileNumber = mobileNumber;
+                const newUser = await updateUser(isExistingUser);
+                const otp = Math.floor(
+                    100000 + Math.random() * 900000,
+                ).toString();
+                const hashedOtp = await hash(otp);
+                await updateUserOTP(newUser.id, hashedOtp);
+                await emailQueue.add(emailQueueName, {
+                    email: newUser.email,
+                    otp,
+                });
+
+                res.status(201).json({
+                    success: true,
+                    message: "User registered successfully",
+                    token: newUser.securityToken,
+                });
+                return;
+            }
             res.status(400).json({
                 success: false,
                 message: "User already registered",
@@ -79,7 +110,7 @@ export const register = async (req: Request, res: Response) => {
             mobileNumber,
         });
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = Math.floor(100000 + Math.random() * 30 * 1000).toString();
         const hashedOtp = await hash(otp);
         await updateUserOTP(newUser.id, hashedOtp);
         await emailQueue.add(emailQueueName, { email: newUser.email, otp });
@@ -118,7 +149,13 @@ export const login = async (req: Request, res: Response) => {
             });
             return;
         }
-
+        if (!existingUser.isVerified) {
+            res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+            return;
+        }
         const isPasswordValid = await verify(existingUser.password, password);
         if (!isPasswordValid) {
             res.status(401).json({
@@ -188,6 +225,14 @@ export const verifyRegisterOTP = async (req: Request, res: Response) => {
         const isOtpValid = await verify(user.hashedOtp as string, otp);
 
         if (!isOtpValid) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid OTP or expired",
+            });
+            return;
+        }
+
+        if (user.otpExpiresAt && user.otpExpiresAt < new Date()) {
             res.status(400).json({
                 success: false,
                 message: "Invalid OTP or expired",
@@ -340,6 +385,24 @@ export const resetPassword = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Password reset successfully",
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+        return;
+    }
+};
+
+export const deleteUsers = async (req: Request, res: Response) => {
+    try {
+        await deleteAllUsers();
+        res.status(200).json({
+            success: true,
+            message: "All users deleted successfully",
         });
         return;
     } catch (error) {

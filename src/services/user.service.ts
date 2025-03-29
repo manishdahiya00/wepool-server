@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import db from "../config/database";
 import { ICreateUser } from "../types";
 import logger from "../config/logger";
+import { User } from "@prisma/client";
 
 export async function createUser({
     fullName,
@@ -39,7 +40,10 @@ export async function updateUserOTP(userId: string, otp: string) {
     try {
         return await db.user.update({
             where: { id: userId },
-            data: { hashedOtp: otp },
+            data: {
+                hashedOtp: otp,
+                otpExpiresAt: new Date(Date.now() + 30 * 1000),
+            },
         });
     } catch (error) {
         logger.error(error);
@@ -51,7 +55,11 @@ export async function verifyUser(userId: string) {
     try {
         return await db.user.update({
             where: { id: userId },
-            data: { isVerified: true, hashedOtp: "" },
+            data: {
+                isVerified: true,
+                hashedOtp: "",
+                otpExpiresAt: new Date(Date.now()),
+            },
         });
     } catch (error) {
         logger.error(error);
@@ -101,5 +109,26 @@ export async function findUserBySecurityToken(token: string) {
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error finding user by security token");
+    }
+}
+
+export async function deleteAllUsers() {
+    try {
+        return await db.user.deleteMany();
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error deleting all users");
+    }
+}
+
+export async function updateUser(user: User) {
+    try {
+        return await db.user.update({
+            where: { id: user.id },
+            data: user,
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error updating user");
     }
 }
