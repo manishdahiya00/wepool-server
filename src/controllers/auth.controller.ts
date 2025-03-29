@@ -5,13 +5,16 @@ import {
     registerSchema,
     resetPasswordSchema,
     verifyOtpSchema,
+    verifyRegisterOtpSchema,
 } from "../validations/auth.validation";
 import logger from "../config/logger";
 import {
     createUser,
     findUserByEmail,
+    updateUserOTP,
     updateUserPassword,
     updateUserSecurityToken,
+    verifyUser,
 } from "../services/user.service";
 import { hash, verify } from "argon2";
 import { formatZodError } from "../utils/zod.error";
@@ -32,8 +35,16 @@ export const register = async (req: Request, res: Response) => {
             return;
         }
 
-        const { fullName, email, password, deviceId, deviceName, deviceType } =
-            result.data;
+        const {
+            fullName,
+            email,
+            password,
+            deviceId,
+            deviceName,
+            deviceType,
+            dob,
+            mobileNumber,
+        } = result.data;
 
         const decision = await aj.protect(req, { email, requested: 3 });
         if (decision.isDenied()) {
@@ -64,7 +75,14 @@ export const register = async (req: Request, res: Response) => {
             deviceId,
             deviceName,
             deviceType,
+            dob,
+            mobileNumber,
         });
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedOtp = await hash(otp);
+        await updateUserOTP(newUser.id, hashedOtp);
+        await emailQueue.add(emailQueueName, { email: newUser.email, otp });
 
         res.status(201).json({
             success: true,
@@ -128,6 +146,60 @@ export const login = async (req: Request, res: Response) => {
             success: true,
             message: "User logged in successfully",
             token: updatedUser.securityToken,
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+        return;
+    }
+};
+
+export const verifyRegisterOTP = async (req: Request, res: Response) => {
+    try {
+        const result = verifyRegisterOtpSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({ message: formatZodError(result.error) });
+            return;
+        }
+
+        const { email, otp } = result.data;
+        const user = await findUserByEmail(email);
+
+        if (!user) {
+            res.status(400).json({ success: false, message: "User not found" });
+            return;
+        }
+        if (
+            user.hashedOtp === null ||
+            user.hashedOtp === undefined ||
+            user.hashedOtp === ""
+        ) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid OTP or expired",
+            });
+            return;
+        }
+
+        const isOtpValid = await verify(user.hashedOtp as string, otp);
+
+        if (!isOtpValid) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid OTP or expired",
+            });
+            return;
+        }
+
+        await verifyUser(user.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Verified successfully",
         });
         return;
     } catch (error) {

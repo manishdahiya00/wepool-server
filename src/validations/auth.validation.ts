@@ -13,6 +13,10 @@ export const registerSchema = z.object({
     deviceId: z.string().min(3, "Device ID must be at least 3 characters long"),
     deviceName: z.string().min(3, "Device name must be at least 3 characters"),
     deviceType: z.string().min(3, "Device type must be at least 3 characters"),
+    dob: z.string().min(3, "Date of birth must be at least 3 characters long"),
+    mobileNumber: z
+        .string()
+        .min(3, "Mobile number must be at least 3 characters long"),
 });
 
 export const loginSchema = z.object({
@@ -33,4 +37,9 @@ export const resetPasswordSchema = z.object({
     email: z.string().email("Enter a valid email address"),
     resetToken: z.string(),
     newPassword: z.string(),
+});
+
+export const verifyRegisterOtpSchema = z.object({
+    email: z.string().email("Enter a valid email address"),
+    otp: z.string(),
 });

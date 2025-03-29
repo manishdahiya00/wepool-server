@@ -23,7 +23,7 @@ export const handler = new Worker(
 );
 
 handler.on("completed", (job) => {
-    logger.info(`Job ${job?.id} completed:`);
+    logger.info(`Job ${job?.id} completed`);
 });
 
 handler.on("failed", (job, err) => {

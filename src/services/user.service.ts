@@ -11,6 +11,8 @@ export async function createUser({
     deviceId,
     deviceName,
     deviceType,
+    dob,
+    mobileNumber,
 }: ICreateUser) {
     try {
         return await db.user.create({
@@ -23,11 +25,37 @@ export async function createUser({
                 deviceId,
                 deviceType,
                 deviceName,
+                dob,
+                mobileNumber,
             },
         });
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error creating user");
+    }
+}
+
+export async function updateUserOTP(userId: string, otp: string) {
+    try {
+        return await db.user.update({
+            where: { id: userId },
+            data: { hashedOtp: otp },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error updating OTP");
+    }
+}
+
+export async function verifyUser(userId: string) {
+    try {
+        return await db.user.update({
+            where: { id: userId },
+            data: { isVerified: true, hashedOtp: "" },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error verifying user");
     }
 }
 

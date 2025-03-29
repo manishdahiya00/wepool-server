@@ -9,7 +9,7 @@ export async function createResetPasswordToken(userId: string, token: string) {
             data: {
                 userId,
                 hashedOtp: token,
-                otpExpiresAt: new Date(Date.now() + 60 * 1000), // 1 minute
+                otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
             },
         });
     } catch (error) {
@@ -47,8 +47,10 @@ export async function updateResetPasswordToken(
         await db.passwordReset.update({
             where: { userId },
             data: {
+                hashedOtp: "-",
+                otpExpiresAt: new Date(Date.now()),
                 resetToken,
-                resetTokenExpiresAt: new Date(Date.now() + 60 * 1000), // 1 minute
+                resetTokenExpiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minute
             },
         });
     } catch (error) {

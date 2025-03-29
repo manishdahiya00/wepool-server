@@ -8,6 +8,8 @@ export interface ICreateUser {
     deviceId: string;
     deviceType: string;
     deviceName: string;
+    dob: string;
+    mobileNumber: string;
 }
 
 declare module "express" {

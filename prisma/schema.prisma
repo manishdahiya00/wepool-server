@@ -16,6 +16,10 @@ model User {
   deviceName    String
   email         String  @unique
   password      String
+  dob           String
+  mobileNumber  String
+  isVerified    Boolean @default(false)
+  hashedOtp     String?
   isBanned      Boolean @default(false)
 
   createdAt     DateTime       @default(now())
@@ -26,7 +30,7 @@ model User {
 model PasswordReset {
   id                  String    @id @default(uuid())
   resetToken          String?
-  hashedOtp           String    @unique
+  hashedOtp           String
   otpExpiresAt        DateTime
   resetTokenExpiresAt DateTime?
   userId              String    @unique

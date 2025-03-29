@@ -15,9 +15,9 @@ export async function sendOtpEmail(otp: string, email: string) {
     const mailOptions = {
         from: `"WePool" <${Config.SMTP_USER}>`,
         to: email,
-        subject: "Password Reset OTP",
-        text: `Your OTP code is: ${otp}. It is valid for 15 minutes.`,
-        html: `<p>Your OTP code is: <strong>${otp}</strong>. It is valid for 15 minutes.</p>`,
+        subject: "WePool - OTP",
+        text: `Your OTP code is: ${otp}.`,
+        html: `<p>Your OTP code is: <strong>${otp}</strong>.`,
     };
 
     try {
