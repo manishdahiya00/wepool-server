@@ -19,3 +19,18 @@ export const loginSchema = z.object({
     email: z.string().email("Enter a valid email address"),
     password: z.string(),
 });
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email("Enter a valid email address"),
+});
+
+export const verifyOtpSchema = z.object({
+    email: z.string().email("Enter a valid email address"),
+    otp: z.string(),
+});
+
+export const resetPasswordSchema = z.object({
+    email: z.string().email("Enter a valid email address"),
+    resetToken: z.string(),
+    newPassword: z.string(),
+});

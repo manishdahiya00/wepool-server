@@ -18,6 +18,22 @@ model User {
   password      String
   isBanned      Boolean @default(false)
 
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  passwordReset PasswordReset?
+}
+
+model PasswordReset {
+  id                  String    @id @default(uuid())
+  resetToken          String?
+  hashedOtp           String    @unique
+  otpExpiresAt        DateTime
+  resetTokenExpiresAt DateTime?
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([otpExpiresAt])
 }

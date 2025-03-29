@@ -13,7 +13,7 @@ export async function createUser({
     deviceType,
 }: ICreateUser) {
     try {
-        const newUser = await db.user.create({
+        return await db.user.create({
             data: {
                 fullName,
                 email,
@@ -25,38 +25,43 @@ export async function createUser({
                 deviceName,
             },
         });
-        return newUser;
     } catch (error) {
         logger.error(error);
-        const err = createHttpError(500, "Error creating user");
-        throw err;
+        throw createHttpError(500, "Error creating user");
     }
 }
 
 export async function findUserByEmail(email: string) {
     try {
-        const user = await db.user.findUnique({
-            where: { email },
+        return await db.user.findFirst({
+            where: { email: { equals: email, mode: "insensitive" } },
         });
-        return user;
     } catch (error) {
         logger.error(error);
-        const err = createHttpError(500, "Error finding user by email");
-        throw err;
+        throw createHttpError(500, "Error finding user by email");
     }
 }
 
 export async function updateUserSecurityToken(userId: string, token: string) {
     try {
-        const user = await db.user.update({
+        return await db.user.update({
             where: { id: userId },
             data: { securityToken: token },
         });
-
-        return user;
     } catch (error) {
         logger.error(error);
-        const err = createHttpError(500, "Error updating the securityToken");
-        throw err;
+        throw createHttpError(500, "Error updating security token");
+    }
+}
+
+export async function updateUserPassword(userId: string, password: string) {
+    try {
+        return await db.user.update({
+            where: { id: userId },
+            data: { password },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error updating password");
     }
 }

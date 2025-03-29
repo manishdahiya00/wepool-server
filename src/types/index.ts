@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+
 export interface ICreateUser {
     fullName: string;
     email: string;
@@ -6,4 +8,15 @@ export interface ICreateUser {
     deviceId: string;
     deviceType: string;
     deviceName: string;
+}
+
+declare module "express" {
+    export interface Request {
+        user?: User;
+    }
+}
+
+export interface EmailJobData {
+    email: string;
+    otp: string;
 }
