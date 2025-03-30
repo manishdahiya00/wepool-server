@@ -42,7 +42,7 @@ export async function updateUserOTP(userId: string, otp: string) {
             where: { id: userId },
             data: {
                 hashedOtp: otp,
-                otpExpiresAt: new Date(Date.now() + 30 * 1000),
+                otpExpiresAt: new Date(Date.now() + 60 * 1000), // 60 seconds
             },
         });
     } catch (error) {
