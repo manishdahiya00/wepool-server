@@ -71,9 +71,7 @@ export const register = async (req: Request, res: Response) => {
                 isExistingUser.dob = dob;
                 isExistingUser.mobileNumber = mobileNumber;
                 const newUser = await updateUser(isExistingUser);
-                const otp = Math.floor(
-                    1000 + Math.random() * 900000,
-                ).toString();
+                const otp = Math.floor(1000 + Math.random() * 9000).toString();
                 const hashedOtp = await hash(otp);
                 await updateUserOTP(newUser.id, hashedOtp);
                 await emailQueue.add(emailQueueName, {
@@ -271,7 +269,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
             return;
         }
 
-        const otp = Math.floor(1000 + Math.random() * 900000).toString();
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
         const hashedOtp = await hash(otp);
 
         await createResetPasswordToken(user.id, hashedOtp);
