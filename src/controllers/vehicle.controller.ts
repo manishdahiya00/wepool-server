@@ -18,7 +18,10 @@ export const addvehicle = async (req: Request, res: Response) => {
     try {
         const result = addVehicleSchema.safeParse(req.body);
         if (!result.success) {
-            res.status(400).json({ message: formatZodError(result.error) });
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
             return;
         }
 
@@ -51,7 +54,10 @@ export const editvehicle = async (req: Request, res: Response) => {
     try {
         const result = editVehicleSchema.safeParse(req.body);
         if (!result.success) {
-            res.status(400).json({ message: formatZodError(result.error) });
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
             return;
         }
 
@@ -59,11 +65,15 @@ export const editvehicle = async (req: Request, res: Response) => {
 
         const vehicle = await findVehicleById(vehicleId);
         if (!vehicle) {
-            res.status(400).json({ message: "Vehicle not found" });
+            res.status(400).json({
+                success: false,
+                message: "Vehicle not found",
+            });
             return;
         }
         if (vehicle.userId !== req.user?.id) {
             res.status(401).json({
+                success: false,
                 message: "You are not authorized to perform this action",
             });
             return;
@@ -111,18 +121,25 @@ export const deleteVehicle = async (req: Request, res: Response) => {
     try {
         const result = deleteVehicleSchema.safeParse(req.body);
         if (!result.success) {
-            res.status(400).json({ message: formatZodError(result.error) });
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
             return;
         }
         const { vehicleId } = result.data;
 
         const vehicle = await findVehicleById(vehicleId);
         if (!vehicle) {
-            res.status(400).json({ message: "Vehicle not found" });
+            res.status(400).json({
+                success: false,
+                message: "Vehicle not found",
+            });
             return;
         }
         if (vehicle.userId !== req.user?.id) {
             res.status(401).json({
+                success: false,
                 message: "You are not authorized to perform this action",
             });
             return;

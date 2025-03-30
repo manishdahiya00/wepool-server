@@ -67,6 +67,11 @@ export async function getAllVehicles(userId: string) {
             orderBy: {
                 createdAt: "desc",
             },
+            select: {
+                brand: true,
+                model: true,
+                color: true,
+            },
         });
         return vehicles;
     } catch (error) {
