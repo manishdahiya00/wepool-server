@@ -8,11 +8,13 @@ export const authenticateUser = async (
 ) => {
     const token = req.headers.authorization;
     if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Session Expired. Login again" });
+        return;
     }
-    const validUser = await findUserBySecurityToken(token);
+    const validUser = await findUserBySecurityToken(token.split(" ")[1]);
     if (!validUser) {
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Session Expired. Login again" });
+        return;
     }
     req.user = validUser;
     next();

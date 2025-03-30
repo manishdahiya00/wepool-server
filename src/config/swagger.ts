@@ -22,8 +22,21 @@ const options = {
                 description: "Production Server",
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
-    apis: ["./src/routes/*.ts"],
+    apis: ["./src/routes/**/*.ts"],
 };
 
 export const specs = swaggerJsdoc(options);

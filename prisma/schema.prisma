@@ -26,6 +26,7 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   passwordReset PasswordReset?
+  vehicles      Vehicle[]
 }
 
 model PasswordReset {
@@ -41,4 +42,16 @@ model PasswordReset {
   updatedAt DateTime @updatedAt
 
   @@index([otpExpiresAt])
+}
+
+model Vehicle {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand  String
+  model  String
+  color  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

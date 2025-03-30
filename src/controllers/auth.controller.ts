@@ -26,7 +26,7 @@ import {
     deleteResetPasswordToken,
     findResetPasswordToken,
     updateResetPasswordToken,
-} from "../services/password.reset.service";
+} from "../services/password.service";
 import { emailQueue, emailQueueName } from "../jobs/email.job";
 
 export const register = async (req: Request, res: Response) => {

@@ -9,7 +9,7 @@ export async function createResetPasswordToken(userId: string, token: string) {
             data: {
                 userId,
                 hashedOtp: token,
-                otpExpiresAt: new Date(Date.now() + 60 * 1000), // 60seconds
+                otpExpiresAt: new Date(Date.now() + 60 * 1000), // 60 seconds
             },
         });
     } catch (error) {

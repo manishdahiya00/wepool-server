@@ -22,3 +22,16 @@ export interface EmailJobData {
     email: string;
     otp: string;
 }
+
+export interface ICreateVehicle {
+    userId: string;
+    brand: string;
+    model: string;
+    color: string;
+}
+export interface IEditVehicle {
+    vehicleId: string;
+    brand: string;
+    model: string;
+    color: string;
+}
