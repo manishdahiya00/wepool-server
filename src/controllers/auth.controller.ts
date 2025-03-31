@@ -20,7 +20,6 @@ import {
 } from "../services/user.service";
 import { hash, verify } from "argon2";
 import { formatZodError } from "../utils/zod.error";
-import aj from "../config/arcjet";
 import {
     createResetPasswordToken,
     deleteResetPasswordToken,
@@ -28,6 +27,7 @@ import {
     updateResetPasswordToken,
 } from "../services/password.service";
 import { emailQueue, emailQueueName } from "../jobs/email.job";
+import { emailAj } from "../config/arcjet";
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -48,7 +48,7 @@ export const register = async (req: Request, res: Response) => {
             mobileNumber,
         } = result.data;
 
-        const decision = await aj.protect(req, { email, requested: 3 });
+        const decision = await emailAj.protect(req, { email, requested: 3 });
         if (decision.isDenied()) {
             res.status(400).json({
                 success: false,

@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.route";
 import * as swaggerUi from "swagger-ui-express";
 import { specs } from "./config/swagger";
 import vehicleRoute from "./routes/vehicle.route";
+import { aj } from "./config/arcjet";
 
 const app = express();
 
@@ -18,6 +19,20 @@ app.get("/health", (_req, res) => {
         message: "Healthy 🚀",
         timeStamp: Date.now(),
     });
+});
+
+app.use("/", async (req: Request, res: Response, next: NextFunction) => {
+    const decision = await aj.protect(req, {
+        requested: 1,
+    });
+    if (decision.isAllowed()) {
+        next();
+    } else {
+        res.status(429).json({
+            success: false,
+            message: "You are going too fast. Please slow down",
+        });
+    }
 });
 
 app.use(authRoutes);

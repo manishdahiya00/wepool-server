@@ -15,6 +15,22 @@ const aj = arcjet({
             mode: "LIVE",
             allow: ["CATEGORY:SEARCH_ENGINE"],
         }),
+
+        shield({ mode: "LIVE" }),
+        tokenBucket({
+            mode: "LIVE",
+            refillRate: 5,
+            interval: 10,
+            capacity: 10,
+        }),
+    ],
+});
+
+const emailAj = arcjet({
+    key: Config.ARCJET_KEY!,
+    characteristics: ["email"],
+    rules: [
+        shield({ mode: "LIVE" }),
         validateEmail({
             mode: "LIVE",
             deny: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
@@ -28,4 +44,4 @@ const aj = arcjet({
     ],
 });
 
-export default aj;
+export { aj, emailAj };
