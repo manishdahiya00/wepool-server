@@ -6,6 +6,7 @@ import * as swaggerUi from "swagger-ui-express";
 import { specs } from "./config/swagger";
 import vehicleRoute from "./routes/vehicle.route";
 import { aj } from "./config/arcjet";
+import rideRoutes from "./routes/ride.route";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/", async (req: Request, res: Response, next: NextFunction) => {
 
 app.use(authRoutes);
 app.use(vehicleRoute);
+app.use(rideRoutes);
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {

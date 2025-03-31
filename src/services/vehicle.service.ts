@@ -68,6 +68,7 @@ export async function getAllVehicles(userId: string) {
                 createdAt: "desc",
             },
             select: {
+                id: true,
                 brand: true,
                 model: true,
                 color: true,

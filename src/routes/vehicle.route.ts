@@ -12,15 +12,19 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  * /vehicle:
  *   get:
  *     summary: Get all vehicles
- *     tags: [Vehicles]
+ *     tags: [Vehicle]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all vehicles
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
  *   post:
  *     summary: Add a new vehicle
- *     tags: [Vehicles]
+ *     tags: [Vehicle]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -42,9 +46,13 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *     responses:
  *       201:
  *         description: Vehicle added successfully
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
  *   put:
  *     summary: Edit a vehicle
- *     tags: [Vehicles]
+ *     tags: [Vehicle]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -69,9 +77,15 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *     responses:
  *       200:
  *         description: Vehicle updated successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  *   delete:
  *     summary: Delete a vehicle
- *     tags: [Vehicles]
+ *     tags: [Vehicle]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -87,6 +101,12 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *     responses:
  *       200:
  *         description: Vehicle deleted successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  */
 
 const router = Router();

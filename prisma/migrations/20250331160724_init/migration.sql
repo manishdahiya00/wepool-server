@@ -47,6 +47,36 @@ CREATE TABLE "Vehicle" (
     CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Ride" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "vehicleId" TEXT NOT NULL,
+    "from" TEXT NOT NULL,
+    "to" TEXT NOT NULL,
+    "date" TEXT NOT NULL,
+    "time" TEXT NOT NULL,
+    "noOfSeats" INTEGER NOT NULL,
+    "pricePerSeat" INTEGER NOT NULL,
+    "summary" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Ride_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "StopOver" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "rideId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "StopOver_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_securityToken_key" ON "User"("securityToken");
 
@@ -64,3 +94,15 @@ ALTER TABLE "PasswordReset" ADD CONSTRAINT "PasswordReset_userId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Vehicle" ADD CONSTRAINT "Vehicle_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Ride" ADD CONSTRAINT "Ride_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Ride" ADD CONSTRAINT "Ride_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StopOver" ADD CONSTRAINT "StopOver_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StopOver" ADD CONSTRAINT "StopOver_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE CASCADE ON UPDATE CASCADE;

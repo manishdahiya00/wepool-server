@@ -35,3 +35,26 @@ export interface IEditVehicle {
     model: string;
     color: string;
 }
+
+export interface ICreateRide {
+    userId: string;
+    vehicleId: string;
+    from: string;
+    to: string;
+    date: string;
+    time: string;
+    noOfSeats: number;
+    pricePerSeat: number;
+    summary: string;
+    stopOvers: IStopOver[];
+}
+export interface IStopOver {
+    title: string;
+}
+
+export interface ISearchRide {
+    from: string;
+    to: string;
+    date: string;
+    noOfSeats: number;
+}
