@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import logger from "../config/logger";
 import db from "../config/database";
 import { ICreateRide, ISearchRide } from "../types";
+import { parse, isAfter } from "date-fns";
 
 export async function createRide({
     userId,
@@ -126,9 +127,14 @@ export async function upcomingRide({ userId }: { userId: string }) {
         const now = new Date();
 
         const upcomingRides = rides.filter((ride) => {
-            const rideDateTime = new Date(`${ride.date} ${ride.time}`);
-            return rideDateTime > now;
+            const rideDateTime = parse(
+                `${ride.date} ${ride.time}`,
+                "MMM dd, yyyy hh:mm a",
+                new Date(),
+            );
+            return isAfter(rideDateTime, now);
         });
+
         return upcomingRides;
     } catch (error) {
         logger.error(error);
