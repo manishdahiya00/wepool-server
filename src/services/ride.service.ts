@@ -134,7 +134,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
         const upcomingRides = rides.filter((ride) => {
             const rideDateTime = DateTime.fromFormat(
                 `${ride.date} ${ride.time}`,
-                "MMMM dd, yyyy hh:mm a",
+                "MMM dd, yyyy hh:mm a",
                 { zone: "Asia/Kolkata" },
             );
 
