@@ -5,7 +5,11 @@ import {
     searchRideSchema,
 } from "../validations/ride.validation";
 import { formatZodError } from "../utils/zod.error";
-import { createRide, searchRides } from "../services/ride.service";
+import {
+    createRide,
+    searchRides,
+    upcomingRide,
+} from "../services/ride.service";
 import { findVehicleById } from "../services/vehicle.service";
 
 export const addRide = async (req: Request, res: Response) => {
@@ -102,6 +106,26 @@ export const searchRide = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Rides fetched successfully",
+            rides,
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const upcomingRides = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id;
+        const rides = await upcomingRide({ userId });
+
+        res.status(200).json({
+            success: true,
+            message: "Upcoming Rides fetched successfully",
             rides,
         });
         return;

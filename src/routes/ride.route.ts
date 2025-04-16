@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { authenticateUser } from "../middlewares/authenticate.middleware";
-import { addRide, searchRide } from "../controllers/ride.controller";
+import {
+    addRide,
+    searchRide,
+    upcomingRides,
+} from "../controllers/ride.controller";
 
 const router = Router();
 
@@ -102,6 +106,21 @@ router.post("/", addRide);
  *         description: Internal server error
  */
 router.post("/search", searchRide);
+
+/** @swagger
+ * /ride/upcoming:
+ *   post:
+ *     summary: Upcoming rides
+ *     tags: [Ride]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Upcoming Rides fetched successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/upcoming", upcomingRides);
 
 const rideRoutes = router.use("/ride", authenticateUser, router);
 

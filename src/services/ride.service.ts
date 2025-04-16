@@ -87,3 +87,46 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
         throw createHttpError(500, "Error fetching rides");
     }
 }
+
+export async function upcomingRide({ userId }: { userId: string }) {
+    try {
+        const rides = await db.ride.findMany({
+            where: {
+                userId,
+                isCompleted: false,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                user: {
+                    select: {
+                        fullName: true,
+                    },
+                },
+                from: true,
+                fromLat: true,
+                fromLong: true,
+                to: true,
+                toLat: true,
+                toLong: true,
+                date: true,
+                time: true,
+                noOfSeats: true,
+                pricePerSeat: true,
+                summary: true,
+                vehicle: {
+                    select: {
+                        brand: true,
+                        model: true,
+                        color: true,
+                    },
+                },
+            },
+        });
+        return rides;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching upcoming rides");
+    }
+}
