@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import createHttpError from "http-errors";
 import logger from "../config/logger";
 import db from "../config/database";
 import { ICreateRide, ISearchRide } from "../types";
-import { parse, isAfter } from "date-fns";
+import { DateTime } from "luxon";
 
 export async function createRide({
     userId,
@@ -124,17 +127,31 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 },
             },
         });
-        const now = new Date();
+
+        const now = DateTime.now().setZone("Asia/Kolkata");
+        console.log("Current IST time:", now.toFormat("MMMM dd, yyyy hh:mm a"));
 
         const upcomingRides = rides.filter((ride) => {
-            const rideDateTime = parse(
+            const rideDateTime = DateTime.fromFormat(
                 `${ride.date} ${ride.time}`,
-                "MMM dd, yyyy hh:mm a",
-                new Date(),
+                "MMMM dd, yyyy hh:mm a",
+                { zone: "Asia/Kolkata" },
             );
-            return isAfter(rideDateTime, now);
+
+            if (!rideDateTime.isValid) {
+                console.error(
+                    `Invalid date format for ride: ${ride.date} ${ride.time}`,
+                );
+                return false;
+            }
+
+            console.log(
+                `Comparing: ${rideDateTime.toString()} vs ${now.toString()}`,
+            );
+            return rideDateTime > now;
         });
 
+        console.log(upcomingRides);
         return upcomingRides;
     } catch (error) {
         logger.error(error);
