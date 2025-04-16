@@ -53,28 +53,21 @@ CREATE TABLE "Ride" (
     "userId" TEXT NOT NULL,
     "vehicleId" TEXT NOT NULL,
     "from" TEXT NOT NULL,
+    "fromLat" TEXT NOT NULL,
+    "fromLong" TEXT NOT NULL,
     "to" TEXT NOT NULL,
-    "date" TEXT NOT NULL,
-    "time" TEXT NOT NULL,
+    "toLat" TEXT NOT NULL,
+    "toLong" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "time" TIMESTAMP(3) NOT NULL,
     "noOfSeats" INTEGER NOT NULL,
     "pricePerSeat" INTEGER NOT NULL,
     "summary" TEXT,
+    "isCompleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Ride_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "StopOver" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "rideId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "StopOver_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -100,9 +93,3 @@ ALTER TABLE "Ride" ADD CONSTRAINT "Ride_userId_fkey" FOREIGN KEY ("userId") REFE
 
 -- AddForeignKey
 ALTER TABLE "Ride" ADD CONSTRAINT "Ride_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StopOver" ADD CONSTRAINT "StopOver_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StopOver" ADD CONSTRAINT "StopOver_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE CASCADE ON UPDATE CASCADE;
