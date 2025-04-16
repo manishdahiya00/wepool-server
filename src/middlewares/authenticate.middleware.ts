@@ -22,6 +22,13 @@ export const authenticateUser = async (
         });
         return;
     }
+    if (!validUser.isVerified) {
+        res.status(401).json({
+            success: false,
+            message: "Session Expired. Login again",
+        });
+        return;
+    }
     req.user = validUser;
     next();
 };

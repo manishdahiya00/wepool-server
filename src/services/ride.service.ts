@@ -93,7 +93,6 @@ export async function upcomingRide({ userId }: { userId: string }) {
         const rides = await db.ride.findMany({
             where: {
                 userId,
-                isCompleted: false,
             },
             orderBy: {
                 createdAt: "desc",
@@ -124,7 +123,13 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 },
             },
         });
-        return rides;
+        const now = new Date();
+
+        const upcomingRides = rides.filter((ride) => {
+            const rideDateTime = new Date(`${ride.date} ${ride.time}`);
+            return rideDateTime > now;
+        });
+        return upcomingRides;
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching upcoming rides");
