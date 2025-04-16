@@ -3,16 +3,15 @@ import { z } from "zod";
 export const createRideSchema = z.object({
     vehicleId: z.string(),
     from: z.string(),
+    fromLat: z.string(),
+    fromLong: z.string(),
     to: z.string(),
+    toLat: z.string(),
+    toLong: z.string(),
     date: z.string(),
     time: z.string(),
     noOfSeats: z.number(),
     pricePerSeat: z.number(),
-    stopOvers: z.array(
-        z.object({
-            title: z.string(),
-        }),
-    ),
     summary: z.string(),
 });
 

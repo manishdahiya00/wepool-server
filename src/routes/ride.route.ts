@@ -24,9 +24,21 @@ const router = Router();
  *               from:
  *                 type: string
  *                 description: From location
+ *               fromLat:
+ *                 type: string
+ *                 description: From location latitude
+ *               fromLong:
+ *                 type: string
+ *                 description: From location longitude
  *               to:
  *                 type: string
  *                 description: To location
+ *               toLat:
+ *                 type: string
+ *                 description: To location latitude
+ *               toLong:
+ *                 type: string
+ *                 description: To location longitude
  *               date:
  *                 type: string
  *                 description: Date of the ride
@@ -42,15 +54,6 @@ const router = Router();
  *               summary:
  *                 type: string
  *                 description: Summary of the ride
- *               stopOvers:
- *                 type: array
- *                 description: Array of stopovers
- *                 items:
- *                   type: object
- *                   properties:
- *                     title:
- *                       type: string
- *                       description: Title of the stopover
  *     responses:
  *       201:
  *         description: Ride added successfully

@@ -28,7 +28,6 @@ model User {
   passwordReset PasswordReset?
   vehicles      Vehicle[]
   rides         Ride[]
-  stopOvers     StopOver[]
 }
 
 model PasswordReset {
@@ -66,25 +65,16 @@ model Ride {
   vehicleId    String
   vehicle      Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   from         String
+  fromLat      String
+  fromLong     String
   to           String
+  toLat        String
+  toLong       String
   date         String
   time         String
   noOfSeats    Int
   pricePerSeat Int
   summary      String?
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  stopOvers StopOver[]
-}
-
-model StopOver {
-  id     String @id @default(uuid())
-  title  String
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rideId String
-  ride   Ride   @relation(fields: [rideId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

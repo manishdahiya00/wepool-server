@@ -13,7 +13,10 @@ export async function createRide({
     noOfSeats,
     pricePerSeat,
     summary,
-    stopOvers,
+    fromLong,
+    fromLat,
+    toLong,
+    toLat,
 }: ICreateRide) {
     try {
         await db.ride.create({
@@ -27,14 +30,10 @@ export async function createRide({
                 noOfSeats,
                 pricePerSeat,
                 summary,
-                stopOvers: {
-                    createMany: {
-                        data: stopOvers.map((stopOver) => ({
-                            ...stopOver,
-                            userId,
-                        })),
-                    },
-                },
+                fromLat,
+                fromLong,
+                toLat,
+                toLong,
             },
         });
     } catch (error) {
@@ -62,13 +61,12 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
                         fullName: true,
                     },
                 },
-                stopOvers: {
-                    select: {
-                        title: true,
-                    },
-                },
                 from: true,
+                fromLat: true,
+                fromLong: true,
                 to: true,
+                toLat: true,
+                toLong: true,
                 date: true,
                 time: true,
                 noOfSeats: true,

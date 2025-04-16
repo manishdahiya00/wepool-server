@@ -40,16 +40,16 @@ export interface ICreateRide {
     userId: string;
     vehicleId: string;
     from: string;
+    fromLat: string;
+    fromLong: string;
     to: string;
+    toLat: string;
+    toLong: string;
     date: string;
     time: string;
     noOfSeats: number;
     pricePerSeat: number;
     summary: string;
-    stopOvers: IStopOver[];
-}
-export interface IStopOver {
-    title: string;
 }
 
 export interface ISearchRide {

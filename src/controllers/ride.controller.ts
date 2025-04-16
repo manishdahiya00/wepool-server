@@ -28,7 +28,10 @@ export const addRide = async (req: Request, res: Response) => {
             noOfSeats,
             pricePerSeat,
             summary,
-            stopOvers,
+            fromLat,
+            fromLong,
+            toLat,
+            toLong,
         } = result.data;
 
         const vehicle = await findVehicleById(vehicleId);
@@ -57,7 +60,10 @@ export const addRide = async (req: Request, res: Response) => {
             noOfSeats,
             pricePerSeat,
             summary,
-            stopOvers,
+            fromLat,
+            fromLong,
+            toLat,
+            toLong,
         });
 
         res.status(201).json({
