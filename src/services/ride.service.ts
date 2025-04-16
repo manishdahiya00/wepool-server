@@ -41,7 +41,6 @@ export async function createRide({
             },
         });
     } catch (error) {
-        console.log(error);
         logger.error(error);
         throw createHttpError(500, "Error creating ride");
     }
@@ -129,7 +128,6 @@ export async function upcomingRide({ userId }: { userId: string }) {
         });
 
         const now = DateTime.now().setZone("Asia/Kolkata");
-        console.log("Current IST time:", now.toFormat("MMMM dd, yyyy hh:mm a"));
 
         const upcomingRides = rides.filter((ride) => {
             const rideDateTime = DateTime.fromFormat(
@@ -139,19 +137,15 @@ export async function upcomingRide({ userId }: { userId: string }) {
             );
 
             if (!rideDateTime.isValid) {
-                console.error(
+                logger.error(
                     `Invalid date format for ride: ${ride.date} ${ride.time}`,
                 );
                 return false;
             }
 
-            console.log(
-                `Comparing: ${rideDateTime.toString()} vs ${now.toString()}`,
-            );
             return rideDateTime > now;
         });
 
-        console.log(upcomingRides);
         return upcomingRides;
     } catch (error) {
         logger.error(error);

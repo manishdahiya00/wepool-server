@@ -20,7 +20,6 @@ export async function createVehicle({
         });
     } catch (error) {
         logger.error(error);
-        console.log(error);
         throw createHttpError(500, "Error creating vehicle");
     }
 }
