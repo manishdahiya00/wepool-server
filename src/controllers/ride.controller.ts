@@ -1,16 +1,22 @@
 import { Request, Response } from "express";
 import logger from "../config/logger";
 import {
+    cancelRideSchema,
     createRideSchema,
+    editRideSchema,
     searchRideSchema,
 } from "../validations/ride.validation";
 import { formatZodError } from "../utils/zod.error";
 import {
+    cancelRideOfUser,
     createRide,
+    editRideOfUser,
+    getRideById,
     searchRides,
     upcomingRide,
 } from "../services/ride.service";
 import { findVehicleById } from "../services/vehicle.service";
+import { User } from "@prisma/client";
 
 export const addRide = async (req: Request, res: Response) => {
     try {
@@ -47,7 +53,7 @@ export const addRide = async (req: Request, res: Response) => {
             return;
         }
         if (vehicle.userId !== userId) {
-            res.status(401).json({
+            res.status(403).json({
                 success: false,
                 message: "You are not authorized to perform this action",
             });
@@ -127,6 +133,181 @@ export const upcomingRides = async (req: Request, res: Response) => {
             success: true,
             message: "Upcoming Rides fetched successfully",
             rides,
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const getRide = async (req: Request, res: Response) => {
+    try {
+        const rideId = req.params.id;
+        if (!rideId) {
+            res.status(400).json({
+                success: false,
+                message: "Ride ID is required",
+            });
+            return;
+        }
+        const userId = req.user!.id;
+        const ride = await getRideById({ rideId, userId });
+        if (!ride) {
+            res.status(404).json({
+                success: false,
+                message: "Ride not found",
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            message: "Ride details fetched successfully",
+            ride,
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const editRide = async (req: Request, res: Response) => {
+    try {
+        const result = editRideSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
+            return;
+        }
+        const userId = req.user!.id;
+        const {
+            vehicleId,
+            rideId,
+            from,
+            to,
+            date,
+            time,
+            noOfSeats,
+            pricePerSeat,
+            summary,
+            fromLat,
+            fromLong,
+            toLat,
+            toLong,
+        } = result.data;
+
+        const ride = await getRideById({ rideId, userId });
+        if (!ride) {
+            res.status(404).json({
+                success: false,
+                message: "Ride not found",
+            });
+            return;
+        }
+        if ((ride.user as User).id !== userId) {
+            res.status(403).json({
+                success: false,
+                message: "You are not authorized to perform this action",
+            });
+            return;
+        }
+        if (ride.isCompleted || ride.isCancelled) {
+            res.status(400).json({
+                success: false,
+                message: "Ride is completed already",
+            });
+            return;
+        }
+        const vehicle = await findVehicleById(vehicleId);
+        if (!vehicle) {
+            res.status(404).json({
+                success: false,
+                message: "Vehicle not found",
+            });
+            return;
+        }
+        await editRideOfUser({
+            userId,
+            vehicleId,
+            rideId,
+            from,
+            to,
+            date,
+            time,
+            noOfSeats,
+            pricePerSeat,
+            summary,
+            fromLat,
+            fromLong,
+            toLat,
+            toLong,
+        });
+        res.status(200).json({
+            success: true,
+            message: "Ride edited successfully",
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const cancelRide = async (req: Request, res: Response) => {
+    try {
+        const result = cancelRideSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
+            return;
+        }
+        const userId = req.user!.id;
+        const { rideId } = result.data;
+
+        const ride = await getRideById({ rideId, userId });
+        if (!ride) {
+            res.status(404).json({
+                success: false,
+                message: "Ride not found",
+            });
+            return;
+        }
+        if ((ride.user as User).id !== userId) {
+            res.status(403).json({
+                success: false,
+                message: "You are not authorized to perform this action",
+            });
+            return;
+        }
+        if (ride.isCompleted || ride.isCancelled) {
+            res.status(400).json({
+                success: false,
+                message: "Ride is completed already",
+            });
+            return;
+        }
+        await cancelRideOfUser({
+            userId,
+            rideId,
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Ride cancelled successfully",
         });
         return;
     } catch (error) {

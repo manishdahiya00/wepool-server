@@ -81,6 +81,8 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *         description: Bad Request
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       500:
  *         description: Internal Server Error
  *   delete:
@@ -105,6 +107,8 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *         description: Bad Request
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       500:
  *         description: Internal Server Error
  */

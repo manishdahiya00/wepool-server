@@ -72,7 +72,7 @@ export const editvehicle = async (req: Request, res: Response) => {
             return;
         }
         if (vehicle.userId !== req.user?.id) {
-            res.status(401).json({
+            res.status(403).json({
                 success: false,
                 message: "You are not authorized to perform this action",
             });
@@ -138,7 +138,7 @@ export const deleteVehicle = async (req: Request, res: Response) => {
             return;
         }
         if (vehicle.userId !== req.user?.id) {
-            res.status(401).json({
+            res.status(403).json({
                 success: false,
                 message: "You are not authorized to perform this action",
             });

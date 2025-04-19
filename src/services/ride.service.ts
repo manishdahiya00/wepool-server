@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import createHttpError from "http-errors";
 import logger from "../config/logger";
 import db from "../config/database";
-import { ICreateRide, ISearchRide } from "../types";
+import { ICreateRide, IEditRide, ISearchRide } from "../types";
 import { DateTime } from "luxon";
 
 export async function createRide({
@@ -150,5 +147,122 @@ export async function upcomingRide({ userId }: { userId: string }) {
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching upcoming rides");
+    }
+}
+
+export async function getRideById({
+    rideId,
+    userId,
+}: {
+    rideId: string;
+    userId: string;
+}) {
+    try {
+        const ride = await db.ride.findFirst({
+            where: {
+                id: rideId,
+                userId,
+            },
+            select: {
+                user: {
+                    select: {
+                        fullName: true,
+                        id: true,
+                    },
+                },
+                from: true,
+                fromLat: true,
+                fromLong: true,
+                to: true,
+                toLat: true,
+                toLong: true,
+                date: true,
+                time: true,
+                noOfSeats: true,
+                pricePerSeat: true,
+                summary: true,
+                isCompleted: true,
+                isCancelled: true,
+                vehicle: {
+                    select: {
+                        brand: true,
+                        model: true,
+                        color: true,
+                    },
+                },
+            },
+        });
+        return ride;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching ride");
+    }
+}
+
+export async function editRideOfUser({
+    userId,
+    rideId,
+    vehicleId,
+    from,
+    to,
+    date,
+    time,
+    noOfSeats,
+    pricePerSeat,
+    summary,
+    fromLong,
+    fromLat,
+    toLong,
+    toLat,
+}: IEditRide) {
+    try {
+        await db.ride.update({
+            where: {
+                userId,
+                id: rideId,
+            },
+            data: {
+                userId,
+                vehicleId,
+                from,
+                to,
+                date,
+                time,
+                noOfSeats,
+                pricePerSeat,
+                summary,
+                fromLat,
+                fromLong,
+                toLat,
+                toLong,
+            },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error editing ride");
+    }
+}
+
+export async function cancelRideOfUser({
+    userId,
+    rideId,
+}: {
+    userId: string;
+    rideId: string;
+}) {
+    try {
+        await db.ride.update({
+            where: {
+                userId,
+                id: rideId,
+            },
+            data: {
+                isCancelled: true,
+                isCompleted: true,
+            },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error cancelling ride");
     }
 }

@@ -52,6 +52,22 @@ export interface ICreateRide {
     summary: string;
 }
 
+export interface IEditRide {
+    userId: string;
+    rideId: string;
+    vehicleId: string;
+    from: string;
+    fromLat: string;
+    fromLong: string;
+    to: string;
+    toLat: string;
+    toLong: string;
+    date: string;
+    time: string;
+    noOfSeats: number;
+    pricePerSeat: number;
+    summary: string;
+}
 export interface ISearchRide {
     from: string;
     to: string;

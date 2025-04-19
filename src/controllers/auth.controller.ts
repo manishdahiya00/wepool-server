@@ -27,7 +27,6 @@ import {
     updateResetPasswordToken,
 } from "../services/password.service";
 import { emailQueue, emailQueueName } from "../jobs/email.job";
-import { emailAj } from "../config/arcjet";
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -47,15 +46,6 @@ export const register = async (req: Request, res: Response) => {
             dob,
             mobileNumber,
         } = result.data;
-
-        const decision = await emailAj.protect(req, { email, requested: 3 });
-        if (decision.isDenied()) {
-            res.status(400).json({
-                success: false,
-                message: "Invalid email address",
-            });
-            return;
-        }
 
         const isExistingUser = await findUserByEmail(email);
 

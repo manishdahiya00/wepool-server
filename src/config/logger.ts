@@ -24,7 +24,7 @@ const logger = winston.createLogger({
             filename: "error-%DATE%.log",
             datePattern: "YYYY-MM-DD",
             level: "error",
-            maxFiles: "30d",
+            maxFiles: "10d",
             format: winston.format.json(),
         }),
 
@@ -33,7 +33,7 @@ const logger = winston.createLogger({
             filename: "app-%DATE%.log",
             datePattern: "YYYY-MM-DD",
             level: "info",
-            maxFiles: "30d",
+            maxFiles: "10d",
             format: winston.format.json(),
         }),
     ],

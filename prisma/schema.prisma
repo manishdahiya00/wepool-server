@@ -76,6 +76,7 @@ model Ride {
   pricePerSeat Int
   summary      String?
   isCompleted  Boolean @default(false)
+  isCancelled  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
