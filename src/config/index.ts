@@ -10,7 +10,6 @@ const {
     SMTP_USER,
     SMTP_PASS,
     SMTP_SERVICE,
-    ARCJET_KEY,
     REDIS_HOST,
     REDIS_PORT,
 } = process.env;
@@ -24,7 +23,6 @@ export const Config = {
     SMTP_PORT,
     SMTP_USER,
     SMTP_SERVICE,
-    ARCJET_KEY,
     REDIS_HOST,
     REDIS_PORT,
 };
