@@ -115,7 +115,7 @@ router.get("/:id", getRide);
  *               vehicleId:
  *                 type: string
  *                 description: ID of the vehicle
- *               rideId:
+ *               id:
  *                 type: string
  *                 description: ID of the ride
  *               from:
@@ -130,7 +130,7 @@ router.get("/:id", getRide);
  *               to:
  *                 type: string
  *                 description: To location
- *               toLat:
+ *               toLat:rideId
  *                 type: string
  *                 description: To location latitude
  *               toLong:
@@ -182,7 +182,7 @@ router.put("/", editRide);
  *           schema:
  *             type: object
  *             properties:
- *               rideId:
+ *               id:
  *                 type: string
  *                 description: ID of the ride
  *     responses:

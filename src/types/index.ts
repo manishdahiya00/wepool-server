@@ -54,7 +54,7 @@ export interface ICreateRide {
 
 export interface IEditRide {
     userId: string;
-    rideId: string;
+    id: string;
     vehicleId: string;
     from: string;
     fromLat: string;

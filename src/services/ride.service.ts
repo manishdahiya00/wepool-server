@@ -98,6 +98,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 createdAt: "desc",
             },
             select: {
+                id: true,
                 user: {
                     select: {
                         fullName: true,
@@ -170,6 +171,7 @@ export async function getRideById({
                         id: true,
                     },
                 },
+                id: true,
                 from: true,
                 fromLat: true,
                 fromLong: true,
@@ -201,7 +203,7 @@ export async function getRideById({
 
 export async function editRideOfUser({
     userId,
-    rideId,
+    id,
     vehicleId,
     from,
     to,
@@ -219,7 +221,7 @@ export async function editRideOfUser({
         await db.ride.update({
             where: {
                 userId,
-                id: rideId,
+                id,
             },
             data: {
                 userId,
@@ -245,16 +247,16 @@ export async function editRideOfUser({
 
 export async function cancelRideOfUser({
     userId,
-    rideId,
+    id,
 }: {
     userId: string;
-    rideId: string;
+    id: string;
 }) {
     try {
         await db.ride.update({
             where: {
                 userId,
-                id: rideId,
+                id,
             },
             data: {
                 isCancelled: true,

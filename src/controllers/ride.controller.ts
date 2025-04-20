@@ -191,7 +191,7 @@ export const editRide = async (req: Request, res: Response) => {
         const userId = req.user!.id;
         const {
             vehicleId,
-            rideId,
+            id,
             from,
             to,
             date,
@@ -205,7 +205,7 @@ export const editRide = async (req: Request, res: Response) => {
             toLong,
         } = result.data;
 
-        const ride = await getRideById({ rideId, userId });
+        const ride = await getRideById({ rideId: id, userId });
         if (!ride) {
             res.status(404).json({
                 success: false,
@@ -238,7 +238,7 @@ export const editRide = async (req: Request, res: Response) => {
         await editRideOfUser({
             userId,
             vehicleId,
-            rideId,
+            id,
             from,
             to,
             date,
@@ -276,9 +276,9 @@ export const cancelRide = async (req: Request, res: Response) => {
             return;
         }
         const userId = req.user!.id;
-        const { rideId } = result.data;
+        const { id } = result.data;
 
-        const ride = await getRideById({ rideId, userId });
+        const ride = await getRideById({ rideId: id, userId });
         if (!ride) {
             res.status(404).json({
                 success: false,
@@ -302,7 +302,7 @@ export const cancelRide = async (req: Request, res: Response) => {
         }
         await cancelRideOfUser({
             userId,
-            rideId,
+            id,
         });
 
         res.status(200).json({

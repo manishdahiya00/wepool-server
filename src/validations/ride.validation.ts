@@ -24,7 +24,7 @@ export const searchRideSchema = z.object({
 
 export const editRideSchema = z.object({
     vehicleId: z.string(),
-    rideId: z.string(),
+    id: z.string(),
     from: z.string(),
     fromLat: z.string(),
     fromLong: z.string(),
@@ -39,5 +39,5 @@ export const editRideSchema = z.object({
 });
 
 export const cancelRideSchema = z.object({
-    rideId: z.string(),
+    id: z.string(),
 });
