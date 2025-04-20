@@ -130,7 +130,7 @@ router.get("/:id", getRide);
  *               to:
  *                 type: string
  *                 description: To location
- *               toLat:rideId
+ *               toLat:
  *                 type: string
  *                 description: To location latitude
  *               toLong:
