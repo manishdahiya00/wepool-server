@@ -51,6 +51,8 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
                 to,
                 date,
                 noOfSeats,
+                isCancelled: false,
+                isCompleted: false,
             },
             orderBy: {
                 createdAt: "desc",
@@ -93,6 +95,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
         const rides = await db.ride.findMany({
             where: {
                 userId,
+                isCancelled: false,
+                isCompleted: false,
             },
             orderBy: {
                 createdAt: "desc",
