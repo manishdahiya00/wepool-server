@@ -76,6 +76,7 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
                 summary: true,
                 vehicle: {
                     select: {
+                        id: true,
                         brand: true,
                         model: true,
                         color: true,
@@ -121,6 +122,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 summary: true,
                 vehicle: {
                     select: {
+                        id: true,
                         brand: true,
                         model: true,
                         color: true,
@@ -191,6 +193,7 @@ export async function getRideById({
                 isCancelled: true,
                 vehicle: {
                     select: {
+                        id: true,
                         brand: true,
                         model: true,
                         color: true,
