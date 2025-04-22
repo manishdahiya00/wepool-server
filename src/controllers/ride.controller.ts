@@ -267,6 +267,7 @@ export const editRide = async (req: Request, res: Response) => {
 
 export const cancelRide = async (req: Request, res: Response) => {
     try {
+        console.log(req.body);
         const result = cancelRideSchema.safeParse(req.body);
         if (!result.success) {
             res.status(400).json({

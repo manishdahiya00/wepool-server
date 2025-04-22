@@ -47,8 +47,14 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
     try {
         const rides = await db.ride.findMany({
             where: {
-                from,
-                to,
+                from: {
+                    contains: from,
+                    mode: "insensitive",
+                },
+                to: {
+                    contains: to,
+                    mode: "insensitive",
+                },
                 date,
                 noOfSeats,
                 isCancelled: false,
@@ -63,6 +69,7 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
                         fullName: true,
                     },
                 },
+                id: true,
                 from: true,
                 fromLat: true,
                 fromLong: true,
