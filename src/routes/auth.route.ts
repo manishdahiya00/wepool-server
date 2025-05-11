@@ -56,6 +56,9 @@ const router = Router();
  *               mobileNumber:
  *                 type: string
  *                 pattern: ^\d{10}$
+ *               gender:
+ *                 type: string
+ *                 minLength: 1
  *     responses:
  *       201:
  *         description: Created

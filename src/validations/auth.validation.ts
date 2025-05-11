@@ -17,6 +17,7 @@ export const registerSchema = z.object({
     mobileNumber: z
         .string()
         .min(3, "Mobile number must be at least 3 characters long"),
+    gender: z.string().min(1, "Gender must be at least 1 characters long"),
 });
 
 export const loginSchema = z.object({

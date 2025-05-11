@@ -10,6 +10,7 @@ export interface ICreateUser {
     deviceName: string;
     dob: string;
     mobileNumber: string;
+    gender: string;
 }
 
 declare module "express" {

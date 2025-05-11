@@ -42,8 +42,7 @@ export async function createRide({
         throw createHttpError(500, "Error creating ride");
     }
 }
-
-export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
+export async function searchRides({ from, to, date }: ISearchRide) {
     try {
         const rides = await db.ride.findMany({
             where: {
@@ -56,17 +55,15 @@ export async function searchRides({ from, to, date, noOfSeats }: ISearchRide) {
                     mode: "insensitive",
                 },
                 date,
-                noOfSeats,
                 isCancelled: false,
                 isCompleted: false,
             },
-            orderBy: {
-                createdAt: "desc",
-            },
+            orderBy: [{ noOfSeats: "desc" }, { createdAt: "desc" }],
             select: {
                 user: {
                     select: {
                         fullName: true,
+                        profilePhoto: true,
                     },
                 },
                 id: true,
@@ -114,6 +111,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 user: {
                     select: {
                         fullName: true,
+                        profilePhoto: true,
                     },
                 },
                 from: true,
@@ -182,6 +180,7 @@ export async function getRideById({
                     select: {
                         fullName: true,
                         id: true,
+                        profilePhoto: true,
                     },
                 },
                 id: true,

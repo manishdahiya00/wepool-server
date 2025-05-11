@@ -14,8 +14,30 @@ export async function createUser({
     deviceType,
     dob,
     mobileNumber,
+    gender,
 }: ICreateUser) {
     try {
+        let profilePhoto;
+
+        const maleProfiles = [
+            "https://api.dicebear.com/9.x/avataaars/svg?seed=male1",
+            "https://api.dicebear.com/9.x/avataaars/svg?seed=male2",
+        ];
+
+        const femaleProfiles = [
+            "https://api.dicebear.com/9.x/avataaars/svg?seed=female1",
+            "https://api.dicebear.com/9.x/avataaars/svg?seed=female2",
+        ];
+
+        if (gender === "M") {
+            profilePhoto =
+                maleProfiles[Math.floor(Math.random() * maleProfiles.length)];
+        } else {
+            profilePhoto =
+                femaleProfiles[
+                    Math.floor(Math.random() * femaleProfiles.length)
+                ];
+        }
         return await db.user.create({
             data: {
                 fullName,
@@ -28,6 +50,8 @@ export async function createUser({
                 deviceName,
                 dob,
                 mobileNumber,
+                gender,
+                profilePhoto,
             },
         });
     } catch (error) {

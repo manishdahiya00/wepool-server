@@ -45,12 +45,35 @@ export const register = async (req: Request, res: Response) => {
             deviceType,
             dob,
             mobileNumber,
+            gender,
         } = result.data;
 
         const isExistingUser = await findUserByEmail(email);
 
         if (isExistingUser) {
             if (!isExistingUser?.isVerified) {
+                let profilePhoto;
+
+                const maleProfiles = [
+                    "https://api.dicebear.com/9.x/avataaars/svg?seed=male1",
+                    "https://api.dicebear.com/9.x/avataaars/svg?seed=male2",
+                ];
+
+                const femaleProfiles = [
+                    "https://api.dicebear.com/9.x/avataaars/svg?seed=female1",
+                    "https://api.dicebear.com/9.x/avataaars/svg?seed=female2",
+                ];
+                if (gender === "M") {
+                    profilePhoto =
+                        maleProfiles[
+                            Math.floor(Math.random() * maleProfiles.length)
+                        ];
+                } else {
+                    profilePhoto =
+                        femaleProfiles[
+                            Math.floor(Math.random() * femaleProfiles.length)
+                        ];
+                }
                 const hashedPass = await hash(password);
                 isExistingUser.email = email;
                 isExistingUser.password = hashedPass;
@@ -60,6 +83,8 @@ export const register = async (req: Request, res: Response) => {
                 isExistingUser.deviceName = deviceName;
                 isExistingUser.dob = dob;
                 isExistingUser.mobileNumber = mobileNumber;
+                isExistingUser.gender = gender;
+                isExistingUser.profilePhoto = profilePhoto;
                 const newUser = await updateUser(isExistingUser);
                 const otp = Math.floor(1000 + Math.random() * 9000)
                     .toString()
@@ -98,6 +123,7 @@ export const register = async (req: Request, res: Response) => {
             deviceType,
             dob,
             mobileNumber,
+            gender,
         });
 
         const otp = Math.floor(1000 + Math.random() * 9000)
