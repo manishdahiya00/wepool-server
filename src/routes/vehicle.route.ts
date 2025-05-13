@@ -123,7 +123,6 @@ router.put("/", editvehicle);
 
 router.delete("/", deleteVehicle);
 
-const vehicleRoute = Router();
-vehicleRoute.use("/vehicle", authenticateUser, router);
+const vehicleRoute = router.use("/vehicle", authenticateUser, router);
 
 export default vehicleRoute;

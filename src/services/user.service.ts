@@ -156,3 +156,73 @@ export async function updateUser(user: User) {
         throw createHttpError(500, "Error updating user");
     }
 }
+export const getUserById = async (userId: string) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                isVerified: true,
+                gender: true,
+                mobileNumber: true,
+                dob: true,
+                profilePhoto: true,
+            },
+        });
+        return user;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error finding user");
+    }
+};
+
+export const getUserCreatedRides = async (userId: string) => {
+    try {
+        const rides = await db.ride.findMany({
+            where: {
+                userId,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                id: true,
+                from: true,
+                fromLat: true,
+                fromLong: true,
+                to: true,
+                toLat: true,
+                toLong: true,
+                date: true,
+                time: true,
+                noOfSeats: true,
+                pricePerSeat: true,
+                summary: true,
+                isCompleted: true,
+                isCancelled: true,
+                cancelledAt: true,
+                remainingSeat: true,
+                vehicle: {
+                    select: {
+                        id: true,
+                        brand: true,
+                        model: true,
+                        color: true,
+                    },
+                },
+                StopOver: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
+            },
+        });
+        return rides;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching user created rides");
+    }
+};

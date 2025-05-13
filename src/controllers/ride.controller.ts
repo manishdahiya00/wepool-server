@@ -4,6 +4,7 @@ import {
     cancelRideSchema,
     createRideSchema,
     editRideSchema,
+    joinRideSchema,
     searchRideSchema,
 } from "../validations/ride.validation";
 import { formatZodError } from "../utils/zod.error";
@@ -12,6 +13,9 @@ import {
     createRide,
     editRideOfUser,
     getRideById,
+    getRideForJoining,
+    isRideJoined,
+    joinRideOfUser,
     searchRides,
     upcomingRide,
 } from "../services/ride.service";
@@ -267,7 +271,6 @@ export const editRide = async (req: Request, res: Response) => {
 
 export const cancelRide = async (req: Request, res: Response) => {
     try {
-        console.log(req.body);
         const result = cancelRideSchema.safeParse(req.body);
         if (!result.success) {
             res.status(400).json({
@@ -309,6 +312,72 @@ export const cancelRide = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Ride cancelled successfully",
+        });
+        return;
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const joinRide = async (req: Request, res: Response) => {
+    try {
+        const result = joinRideSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
+            return;
+        }
+
+        const userId = req.user!.id;
+        const { rideId } = result.data;
+
+        const ride = await getRideForJoining({ rideId });
+        if (!ride) {
+            res.status(404).json({
+                success: false,
+                message: "Ride not found",
+            });
+            return;
+        } else if (ride.isCompleted || ride.isCancelled) {
+            res.status(400).json({
+                success: false,
+                message: "Ride is completed already",
+            });
+            return;
+        }
+
+        if (ride.userId === userId) {
+            res.status(403).json({
+                success: false,
+                message: "You cannot join your own ride",
+            });
+            return;
+        }
+
+        const isAlreadyJoined = await isRideJoined({ rideId, userId });
+
+        if (isAlreadyJoined) {
+            res.status(400).json({
+                success: false,
+                message: "You have already joined this ride",
+            });
+            return;
+        }
+
+        await joinRideOfUser({
+            userId,
+            rideId,
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Ride joined successfully",
         });
         return;
     } catch (error) {

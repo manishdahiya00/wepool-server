@@ -5,9 +5,11 @@ import {
     cancelRide,
     editRide,
     getRide,
+    joinRide,
     searchRide,
     upcomingRides,
 } from "../controllers/ride.controller";
+import { getStopOvers } from "../controllers/stopover.controller";
 
 const router = Router();
 
@@ -251,6 +253,62 @@ router.post("/search", searchRide);
  *         description: Internal server error
  */
 router.post("/upcoming", upcomingRides);
+
+/** @swagger
+ * /ride/join:
+ *   post:
+ *     summary: Join ride
+ *     tags: [Ride]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rideId:
+ *                 type: string
+ *                 description: Ride id
+ *     responses:
+ *       200:
+ *         description: Rides fetched successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/join", joinRide);
+
+/** @swagger
+ * /ride/stopover:
+ *   post:
+ *     summary: Get stopovers of the ride by rideId
+ *     tags: [Ride]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rideId:
+ *                 type: string
+ *                 description: ID of the ride
+ *     responses:
+ *       200:
+ *         description: Stopovers fetched successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Ride or stopovers not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/stopover", getStopOvers);
 
 const rideRoutes = router.use("/ride", authenticateUser, router);
 

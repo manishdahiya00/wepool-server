@@ -262,7 +262,6 @@ router.post("/reset-password", resetPassword);
  */
 router.post("/delete-users", deleteUsers);
 
-const authRoutes = Router();
-authRoutes.use("/auth", router);
+const authRoutes = router.use("/auth", router);
 
 export default authRoutes;

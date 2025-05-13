@@ -41,3 +41,16 @@ export const editRideSchema = z.object({
 export const cancelRideSchema = z.object({
     id: z.string(),
 });
+
+export const joinRideSchema = z.object({
+    rideId: z.string(),
+});
+
+export const createStopOverSchema = z.object({
+    title: z.string(),
+    rideId: z.string(),
+});
+
+export const getStopOversOfRideSchema = z.object({
+    rideId: z.string(),
+});

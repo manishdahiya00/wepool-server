@@ -35,6 +35,7 @@ export async function createRide({
                 fromLong,
                 toLat,
                 toLong,
+                remainingSeat: noOfSeats,
             },
         });
     } catch (error) {
@@ -78,12 +79,19 @@ export async function searchRides({ from, to, date }: ISearchRide) {
                 noOfSeats: true,
                 pricePerSeat: true,
                 summary: true,
+                remainingSeat: true,
                 vehicle: {
                     select: {
                         id: true,
                         brand: true,
                         model: true,
                         color: true,
+                    },
+                },
+                StopOver: {
+                    select: {
+                        id: true,
+                        title: true,
                     },
                 },
             },
@@ -100,7 +108,6 @@ export async function upcomingRide({ userId }: { userId: string }) {
         const rides = await db.ride.findMany({
             where: {
                 userId,
-                isCancelled: false,
                 isCompleted: false,
             },
             orderBy: {
@@ -108,6 +115,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
             },
             select: {
                 id: true,
+                isCancelled: true,
+                cancelledAt: true,
                 user: {
                     select: {
                         fullName: true,
@@ -125,6 +134,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 noOfSeats: true,
                 pricePerSeat: true,
                 summary: true,
+                remainingSeat: true,
+
                 vehicle: {
                     select: {
                         id: true,
@@ -133,12 +144,18 @@ export async function upcomingRide({ userId }: { userId: string }) {
                         color: true,
                     },
                 },
+                StopOver: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
             },
         });
 
         const now = DateTime.now().setZone("Asia/Kolkata");
 
-        const upcomingRides = rides.filter((ride) => {
+        const filteredRides = rides.filter((ride) => {
             const rideDateTime = DateTime.fromFormat(
                 `${ride.date} ${ride.time}`,
                 "MMM dd, yyyy hh:mm a",
@@ -152,10 +169,32 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 return false;
             }
 
-            return rideDateTime > now;
+            if (rideDateTime <= now) return false;
+
+            if (ride.isCancelled) {
+                if (!ride.cancelledAt) {
+                    logger.warn(
+                        `Cancelled ride ${ride.id} is missing cancelledAt`,
+                    );
+                    return false;
+                }
+                const cancelledAt = DateTime.fromJSDate(
+                    ride.cancelledAt,
+                ).setZone("Asia/Kolkata");
+                return now < cancelledAt.plus({ hours: 36 });
+            }
+
+            return true;
         });
 
-        return upcomingRides;
+        const upcomingRidesWithJoinStatus = await Promise.all(
+            filteredRides.map(async (ride) => {
+                const joined = await isRideJoined({ rideId: ride.id, userId });
+                return { ...ride, joined };
+            }),
+        );
+
+        return upcomingRidesWithJoinStatus;
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching upcoming rides");
@@ -197,12 +236,19 @@ export async function getRideById({
                 summary: true,
                 isCompleted: true,
                 isCancelled: true,
+                remainingSeat: true,
                 vehicle: {
                     select: {
                         id: true,
                         brand: true,
                         model: true,
                         color: true,
+                    },
+                },
+                StopOver: {
+                    select: {
+                        id: true,
+                        title: true,
                     },
                 },
             },
@@ -273,7 +319,7 @@ export async function cancelRideOfUser({
             },
             data: {
                 isCancelled: true,
-                isCompleted: true,
+                cancelledAt: new Date(),
             },
         });
     } catch (error) {
@@ -281,3 +327,68 @@ export async function cancelRideOfUser({
         throw createHttpError(500, "Error cancelling ride");
     }
 }
+export const joinRideOfUser = async ({
+    userId,
+    rideId,
+}: {
+    userId: string;
+    rideId: string;
+}) => {
+    try {
+        await db.userRide.create({
+            data: {
+                userId,
+                rideId,
+            },
+        });
+        await db.ride.update({
+            where: {
+                id: rideId,
+            },
+            data: {
+                remainingSeat: {
+                    decrement: 1,
+                },
+            },
+        });
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error joining ride");
+    }
+};
+
+export const getRideForJoining = async ({ rideId }: { rideId: string }) => {
+    try {
+        const ride = await db.ride.findFirst({
+            where: {
+                id: rideId,
+            },
+        });
+        return ride;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching ride");
+    }
+};
+
+export const isRideJoined = async ({
+    rideId,
+    userId,
+}: {
+    rideId: string;
+    userId: string;
+}) => {
+    try {
+        const isJoined = await db.userRide.findFirst({
+            where: {
+                rideId,
+                userId,
+            },
+        });
+
+        return !!isJoined;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching ride");
+    }
+};

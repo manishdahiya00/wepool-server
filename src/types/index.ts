@@ -75,3 +75,9 @@ export interface ISearchRide {
     date: string;
     noOfSeats: number;
 }
+
+export interface ICreateStopOver {
+    userId: string;
+    title: string;
+    rideId: string;
+}

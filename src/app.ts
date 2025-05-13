@@ -7,6 +7,8 @@ import { specs } from "./config/swagger";
 import vehicleRoute from "./routes/vehicle.route";
 import rideRoutes from "./routes/ride.route";
 import { rateLimit, RateLimitRequestHandler } from "express-rate-limit";
+import userRoutes from "./routes/user.route";
+import stopoverRoutes from "./routes/stopover.route";
 
 const app = express();
 
@@ -40,8 +42,10 @@ app.get("/health", (_req, res) => {
 });
 
 app.use(authRoutes);
+app.use(userRoutes);
 app.use(vehicleRoute);
 app.use(rideRoutes);
+app.use(stopoverRoutes);
 
 // Global error handler
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
@@ -50,7 +54,6 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     const statusCode = err instanceof HttpError ? err.statusCode : 500;
     const message =
         err instanceof Error ? err.message : "Internal Server Error";
-
     res.status(statusCode).json({
         errors: [{ type: "Error", msg: message, path: "", location: "" }],
     });
