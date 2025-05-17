@@ -47,7 +47,7 @@ export const joinRideSchema = z.object({
 });
 
 export const createStopOverSchema = z.object({
-    title: z.string(),
+    titles: z.array(z.string()).min(1, "At least one stopover is required"),
     rideId: z.string(),
 });
 

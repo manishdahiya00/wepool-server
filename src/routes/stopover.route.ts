@@ -6,12 +6,11 @@ import {
     removeStopOver,
 } from "../controllers/stopover.controller";
 
-const router = Router();
-
+const stopOverRouter = Router();
 /** @swagger
  * /stopover:
  *   post:
- *     summary: Add a new stopover
+ *     summary: Add multiple stopovers to a ride
  *     tags: [Stopover]
  *     security:
  *       - bearerAuth: []
@@ -21,25 +20,31 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - titles
+ *               - rideId
  *             properties:
- *               title:
- *                 type: string
- *                 description: Title of the stopover
+ *               titles:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: List of stopover titles
+ *                 example: ["Stop 1", "Stop 2", "Stop 3"]
  *               rideId:
  *                 type: string
  *                 description: ID of the ride
  *     responses:
  *       201:
- *         description: Stopover added successfully
+ *         description: Stopovers added successfully
  *       400:
- *         description: Bad request
+ *         description: Bad request (validation error)
  *       401:
  *         description: Unauthorized
  *       500:
  *         description: Internal server error
- *
  */
-router.post("/", addStopOver);
+
+stopOverRouter.post("/", addStopOver);
 
 /** @swagger
  * /stopover/{id}:
@@ -63,7 +68,7 @@ router.post("/", addStopOver);
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", getStopOver);
+stopOverRouter.get("/:id", getStopOver);
 
 /** @swagger
  * /stopover/{id}:
@@ -87,8 +92,12 @@ router.get("/:id", getStopOver);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", removeStopOver);
+stopOverRouter.delete("/:id", removeStopOver);
 
-const stopoverRoutes = router.use("/stopover", authenticateUser, router);
+const stopoverRoutes = Router().use(
+    "/stopover",
+    authenticateUser,
+    stopOverRouter,
+);
 
 export default stopoverRoutes;

@@ -11,7 +11,7 @@ import {
 } from "../controllers/ride.controller";
 import { getStopOvers } from "../controllers/stopover.controller";
 
-const router = Router();
+const rideRouter = Router();
 
 /** @swagger
  * /ride:
@@ -74,7 +74,7 @@ const router = Router();
  *         description: Internal server error
  *
  */
-router.post("/", addRide);
+rideRouter.post("/", addRide);
 
 /** @swagger
  * /ride/{id}:
@@ -98,7 +98,7 @@ router.post("/", addRide);
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", getRide);
+rideRouter.get("/:id", getRide);
 
 /** @swagger
  * /ride:
@@ -168,7 +168,7 @@ router.get("/:id", getRide);
  *         description: Internal server error
  *
  */
-router.put("/", editRide);
+rideRouter.put("/", editRide);
 
 /** @swagger
  * /ride/cancel:
@@ -201,7 +201,7 @@ router.put("/", editRide);
  *       500:
  *         description: Internal server error
  */
-router.delete("/cancel", cancelRide);
+rideRouter.delete("/cancel", cancelRide);
 
 /** @swagger
  * /ride/search:
@@ -237,7 +237,7 @@ router.delete("/cancel", cancelRide);
  *       500:
  *         description: Internal server error
  */
-router.post("/search", searchRide);
+rideRouter.post("/search", searchRide);
 
 /** @swagger
  * /ride/upcoming:
@@ -252,7 +252,7 @@ router.post("/search", searchRide);
  *       500:
  *         description: Internal server error
  */
-router.post("/upcoming", upcomingRides);
+rideRouter.post("/upcoming", upcomingRides);
 
 /** @swagger
  * /ride/join:
@@ -279,7 +279,7 @@ router.post("/upcoming", upcomingRides);
  *       500:
  *         description: Internal server error
  */
-router.post("/join", joinRide);
+rideRouter.post("/join", joinRide);
 
 /** @swagger
  * /ride/stopover:
@@ -308,8 +308,8 @@ router.post("/join", joinRide);
  *       500:
  *         description: Internal server error
  */
-router.post("/stopover", getStopOvers);
+rideRouter.post("/stopover", getStopOvers);
 
-const rideRoutes = router.use("/ride", authenticateUser, router);
+const rideRoutes = Router().use("/ride", authenticateUser, rideRouter);
 
 export default rideRoutes;

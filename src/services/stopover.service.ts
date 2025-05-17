@@ -1,24 +1,26 @@
 import createHttpError from "http-errors";
 import db from "../config/database";
-import { ICreateStopOver } from "../types";
+import { ICreateStopOvers } from "../types";
 import logger from "../config/logger";
 
-export async function createStopOver({
+export async function createStopOvers({
     userId,
-    title,
     rideId,
-}: ICreateStopOver) {
+    titles,
+}: ICreateStopOvers) {
     try {
-        return await db.stopOver.create({
-            data: {
+        await db.stopOver.createMany({
+            data: titles.map((title) => ({
                 userId,
                 title,
                 rideId,
-            },
+            })),
         });
+
+        return;
     } catch (error) {
         logger.error(error);
-        throw createHttpError(500, "Error creating stopover");
+        throw createHttpError(500, "Error creating stopovers");
     }
 }
 

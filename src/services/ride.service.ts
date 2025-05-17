@@ -102,7 +102,6 @@ export async function searchRides({ from, to, date }: ISearchRide) {
         throw createHttpError(500, "Error fetching rides");
     }
 }
-
 export async function upcomingRide({ userId }: { userId: string }) {
     try {
         const rides = await db.ride.findMany({
@@ -135,13 +134,24 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 pricePerSeat: true,
                 summary: true,
                 remainingSeat: true,
-
                 vehicle: {
                     select: {
                         id: true,
                         brand: true,
                         model: true,
                         color: true,
+                    },
+                },
+                UserRide: {
+                    select: {
+                        user: {
+                            select: {
+                                fullName: true,
+                                mobileNumber: true,
+                                profilePhoto: true,
+                                gender: true,
+                            },
+                        },
                     },
                 },
                 StopOver: {
@@ -153,6 +163,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
             },
         });
 
+        // Filter and handle date logic as you already have
         const now = DateTime.now().setZone("Asia/Kolkata");
 
         const filteredRides = rides.filter((ride) => {
@@ -187,14 +198,21 @@ export async function upcomingRide({ userId }: { userId: string }) {
             return true;
         });
 
-        const upcomingRidesWithJoinStatus = await Promise.all(
-            filteredRides.map(async (ride) => {
+        // Map UserRide to array of users directly here
+        const ridesWithUsers = filteredRides.map(({ UserRide, ...ride }) => ({
+            ...ride,
+            joinedUsers: UserRide.map((ur) => ur.user),
+        }));
+
+        // Add joined info if needed
+        const upcomingRides = await Promise.all(
+            ridesWithUsers.map(async (ride) => {
                 const joined = await isRideJoined({ rideId: ride.id, userId });
                 return { ...ride, joined };
             }),
         );
 
-        return upcomingRidesWithJoinStatus;
+        return upcomingRides;
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching upcoming rides");

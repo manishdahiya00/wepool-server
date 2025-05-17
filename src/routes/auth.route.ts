@@ -9,7 +9,7 @@ import {
     verifyRegisterOTP,
 } from "../controllers/auth.controller";
 
-const router = Router();
+const authRouter = Router();
 
 /**
  * @swagger
@@ -68,7 +68,7 @@ const router = Router();
  *         description: Internal Server Error
  *
  */
-router.post("/register", register);
+authRouter.post("/register", register);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.post("/register", register);
  *         description: Internal Server Error
  *
  */
-router.post("/verify-user", verifyRegisterOTP);
+authRouter.post("/verify-user", verifyRegisterOTP);
 
 /**
  * @swagger
@@ -140,7 +140,7 @@ router.post("/verify-user", verifyRegisterOTP);
  *         description: Internal Server Error
  *
  */
-router.post("/login", login);
+authRouter.post("/login", login);
 
 /**
  * @swagger
@@ -170,7 +170,7 @@ router.post("/login", login);
  *         description: Internal Server Error
  *
  */
-router.post("/forgot-password", forgotPassword);
+authRouter.post("/forgot-password", forgotPassword);
 
 /**
  * @swagger
@@ -204,7 +204,7 @@ router.post("/forgot-password", forgotPassword);
  *         description: Internal Server Error
  *
  */
-router.post("/verify-otp", verifyOtp);
+authRouter.post("/verify-otp", verifyOtp);
 
 /**
  * @swagger
@@ -242,7 +242,7 @@ router.post("/verify-otp", verifyOtp);
  *         description: Internal Server Error
  *
  */
-router.post("/reset-password", resetPassword);
+authRouter.post("/reset-password", resetPassword);
 
 /**
  * @swagger
@@ -260,8 +260,8 @@ router.post("/reset-password", resetPassword);
  *         description: Internal Server Error
  *
  */
-router.post("/delete-users", deleteUsers);
+authRouter.post("/delete-users", deleteUsers);
 
-const authRoutes = router.use("/auth", router);
+const authRoutes = Router().use("/auth", authRouter);
 
 export default authRoutes;

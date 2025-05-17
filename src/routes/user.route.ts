@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getUser, userCreatedRides } from "../controllers/user.controller";
 import { authenticateUser } from "../middlewares/authenticate.middleware";
 
-const router = Router();
+const userRouter = Router();
 
 /** @swagger
  * /user:
@@ -19,7 +19,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/", getUser);
+userRouter.get("/", getUser);
 
 /** @swagger
  * /user/createdRideHistory:
@@ -36,8 +36,8 @@ router.get("/", getUser);
  *       500:
  *         description: Internal server error
  */
-router.get("/createdRideHistory", userCreatedRides);
+userRouter.get("/createdRideHistory", userCreatedRides);
 
-const userRoutes = router.use("/user", authenticateUser, router);
+const userRoutes = Router().use("/user", authenticateUser, userRouter);
 
 export default userRoutes;

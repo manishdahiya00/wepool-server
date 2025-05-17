@@ -113,16 +113,16 @@ import { authenticateUser } from "../middlewares/authenticate.middleware";
  *         description: Internal Server Error
  */
 
-const router = Router();
+const vehicleRouter = Router();
 
-router.get("/", allVehicles);
+vehicleRouter.get("/", allVehicles);
 
-router.post("/", addvehicle);
+vehicleRouter.post("/", addvehicle);
 
-router.put("/", editvehicle);
+vehicleRouter.put("/", editvehicle);
 
-router.delete("/", deleteVehicle);
+vehicleRouter.delete("/", deleteVehicle);
 
-const vehicleRoute = router.use("/vehicle", authenticateUser, router);
+const vehicleRoute = Router().use("/vehicle", authenticateUser, vehicleRouter);
 
 export default vehicleRoute;

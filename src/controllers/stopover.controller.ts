@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import logger from "../config/logger";
 import {
-    createStopOver,
+    createStopOvers,
     getStopOverById,
     getStopOversOfRide,
     removeStopOverById,
@@ -23,19 +23,19 @@ export const addStopOver = async (req: Request, res: Response) => {
             });
             return;
         }
-        const userId = req.user!.id;
-        const { title, rideId } = result.data;
 
-        const stopOver = await createStopOver({
+        const userId = req.user!.id;
+        const { titles, rideId } = result.data;
+
+        await createStopOvers({
             userId,
-            title,
             rideId,
+            titles,
         });
 
         res.status(201).json({
             success: true,
             message: "Stopover added successfully",
-            stopOver,
         });
         return;
     } catch (error) {
