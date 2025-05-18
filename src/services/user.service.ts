@@ -29,7 +29,7 @@ export async function createUser({
             "https://api.dicebear.com/9.x/avataaars/svg?seed=female2",
         ];
 
-        if (gender === "M") {
+        if (gender === "Male") {
             profilePhoto =
                 maleProfiles[Math.floor(Math.random() * maleProfiles.length)];
         } else {

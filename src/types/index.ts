@@ -51,6 +51,7 @@ export interface ICreateRide {
     noOfSeats: number;
     pricePerSeat: number;
     summary: string;
+    stopovers: string[];
 }
 
 export interface IEditRide {
@@ -68,6 +69,7 @@ export interface IEditRide {
     noOfSeats: number;
     pricePerSeat: number;
     summary: string;
+    stopovers: string[];
 }
 export interface ISearchRide {
     from: string;

@@ -46,6 +46,7 @@ export const addRide = async (req: Request, res: Response) => {
             fromLong,
             toLat,
             toLong,
+            stopovers,
         } = result.data;
 
         const vehicle = await findVehicleById(vehicleId);
@@ -78,6 +79,7 @@ export const addRide = async (req: Request, res: Response) => {
             fromLong,
             toLat,
             toLong,
+            stopovers,
         });
 
         res.status(201).json({
@@ -207,6 +209,7 @@ export const editRide = async (req: Request, res: Response) => {
             fromLong,
             toLat,
             toLong,
+            stopovers,
         } = result.data;
 
         const ride = await getRideById({ rideId: id, userId });
@@ -254,6 +257,7 @@ export const editRide = async (req: Request, res: Response) => {
             fromLong,
             toLat,
             toLong,
+            stopovers,
         });
         res.status(200).json({
             success: true,
@@ -366,6 +370,14 @@ export const joinRide = async (req: Request, res: Response) => {
             res.status(400).json({
                 success: false,
                 message: "You have already joined this ride",
+            });
+            return;
+        }
+
+        if (ride.remainingSeat === 0) {
+            res.status(400).json({
+                success: false,
+                message: "No more seats available",
             });
             return;
         }

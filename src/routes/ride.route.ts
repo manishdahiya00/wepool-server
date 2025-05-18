@@ -63,6 +63,16 @@ const rideRouter = Router();
  *               summary:
  *                 type: string
  *                 description: Summary of the ride
+ *               stopovers:
+ *                 type: array
+ *                 description: Array of stopover titles
+ *                 items:
+ *                   type: string
+ *                   description: Stopover title
+ *                 example: ["Stopover 1", "Stopover 2"]
+ *                 required: true
+ *                 uniqueItems: true
+ *
  *     responses:
  *       201:
  *         description: Ride added successfully
@@ -153,6 +163,15 @@ rideRouter.get("/:id", getRide);
  *               summary:
  *                 type: string
  *                 description: Summary of the ride
+ *               stopovers:
+ *                 type: array
+ *                 description: Array of stopover titles
+ *                 items:
+ *                   type: string
+ *                   description: Stopover title
+ *                 example: ["Stopover 1", "Stopover 2"]
+ *                 required: true
+ *                 uniqueItems: true
  *     responses:
  *       200:
  *         description: Ride edited successfully

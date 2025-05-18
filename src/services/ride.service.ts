@@ -17,6 +17,7 @@ export async function createRide({
     fromLong,
     fromLat,
     toLong,
+    stopovers,
     toLat,
 }: ICreateRide) {
     try {
@@ -36,6 +37,11 @@ export async function createRide({
                 toLat,
                 toLong,
                 remainingSeat: noOfSeats,
+                StopOver: {
+                    createMany: {
+                        data: stopovers.map((title) => ({ title, userId })),
+                    },
+                },
             },
         });
     } catch (error) {
@@ -43,6 +49,7 @@ export async function createRide({
         throw createHttpError(500, "Error creating ride");
     }
 }
+
 export async function searchRides({ from, to, date }: ISearchRide) {
     try {
         const rides = await db.ride.findMany({
@@ -218,7 +225,6 @@ export async function upcomingRide({ userId }: { userId: string }) {
         throw createHttpError(500, "Error fetching upcoming rides");
     }
 }
-
 export async function getRideById({
     rideId,
     userId,
@@ -255,6 +261,18 @@ export async function getRideById({
                 isCompleted: true,
                 isCancelled: true,
                 remainingSeat: true,
+                UserRide: {
+                    select: {
+                        user: {
+                            select: {
+                                fullName: true,
+                                mobileNumber: true,
+                                profilePhoto: true,
+                                gender: true,
+                            },
+                        },
+                    },
+                },
                 vehicle: {
                     select: {
                         id: true,
@@ -271,7 +289,17 @@ export async function getRideById({
                 },
             },
         });
-        return ride;
+
+        if (!ride) return null;
+
+        // Transform `UserRide` to `joinedUsers`
+        const joinedUsers = ride.UserRide.map((r) => r.user);
+
+        return {
+            ...ride,
+            joinedUsers,
+            UserRide: undefined,
+        };
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching ride");
@@ -293,6 +321,7 @@ export async function editRideOfUser({
     fromLat,
     toLong,
     toLat,
+    stopovers,
 }: IEditRide) {
     try {
         await db.ride.update({
@@ -314,6 +343,15 @@ export async function editRideOfUser({
                 fromLong,
                 toLat,
                 toLong,
+                StopOver: {
+                    deleteMany: {},
+                    createMany: {
+                        data: stopovers.map((title) => ({
+                            title,
+                            userId,
+                        })),
+                    },
+                },
             },
         });
     } catch (error) {

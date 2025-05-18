@@ -63,7 +63,7 @@ export const register = async (req: Request, res: Response) => {
                     "https://api.dicebear.com/9.x/avataaars/svg?seed=female1",
                     "https://api.dicebear.com/9.x/avataaars/svg?seed=female2",
                 ];
-                if (gender === "M") {
+                if (gender === "Male") {
                     profilePhoto =
                         maleProfiles[
                             Math.floor(Math.random() * maleProfiles.length)
