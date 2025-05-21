@@ -72,6 +72,7 @@ export async function searchRides({ from, to, date }: ISearchRide) {
                     select: {
                         fullName: true,
                         profilePhoto: true,
+                        mobileNumber: true,
                     },
                 },
                 id: true,
