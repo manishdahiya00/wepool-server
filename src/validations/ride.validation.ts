@@ -13,7 +13,7 @@ export const createRideSchema = z.object({
     noOfSeats: z.number(),
     pricePerSeat: z.number(),
     summary: z.string(),
-    stopovers: z.array(z.string()).min(1, "At least one stopover is required"),
+    stopovers: z.array(z.string()),
 });
 
 export const searchRideSchema = z.object({
@@ -37,7 +37,7 @@ export const editRideSchema = z.object({
     noOfSeats: z.number(),
     pricePerSeat: z.number(),
     summary: z.string(),
-    stopovers: z.array(z.string()).min(1, "At least one stopover is required"),
+    stopovers: z.array(z.string()),
 });
 
 export const cancelRideSchema = z.object({

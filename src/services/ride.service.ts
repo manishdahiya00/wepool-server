@@ -226,6 +226,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
         throw createHttpError(500, "Error fetching upcoming rides");
     }
 }
+
 export async function getRideById({
     rideId,
     userId,

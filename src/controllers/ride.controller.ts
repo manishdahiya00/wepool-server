@@ -106,6 +106,7 @@ export const searchRide = async (req: Request, res: Response) => {
             });
             return;
         }
+
         const { from, to, date, noOfSeats } = result.data;
 
         const rides = await searchRides({
@@ -326,7 +327,6 @@ export const cancelRide = async (req: Request, res: Response) => {
         });
     }
 };
-
 export const joinRide = async (req: Request, res: Response) => {
     try {
         const result = joinRideSchema.safeParse(req.body);
