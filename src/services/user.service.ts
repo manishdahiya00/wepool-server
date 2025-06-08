@@ -190,6 +190,8 @@ export const getUserCreatedRides = async (userId: string) => {
             select: {
                 id: true,
                 from: true,
+                subFrom: true,
+                subTo: true,
                 fromLat: true,
                 fromLong: true,
                 to: true,

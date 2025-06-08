@@ -41,9 +41,11 @@ export interface ICreateRide {
     userId: string;
     vehicleId: string;
     from: string;
+    subFrom: string;
     fromLat: string;
     fromLong: string;
     to: string;
+    subTo: string;
     toLat: string;
     toLong: string;
     date: string;
@@ -59,9 +61,11 @@ export interface IEditRide {
     id: string;
     vehicleId: string;
     from: string;
+    subFrom: string;
     fromLat: string;
     fromLong: string;
     to: string;
+    subTo: string;
     toLat: string;
     toLong: string;
     date: string;

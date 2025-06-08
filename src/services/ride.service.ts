@@ -8,7 +8,9 @@ export async function createRide({
     userId,
     vehicleId,
     from,
+    subFrom,
     to,
+    subTo,
     date,
     time,
     noOfSeats,
@@ -26,6 +28,8 @@ export async function createRide({
                 userId,
                 vehicleId,
                 from,
+                subFrom,
+                subTo,
                 to,
                 date,
                 time,
@@ -77,6 +81,8 @@ export async function searchRides({ from, to, date }: ISearchRide) {
                 },
                 id: true,
                 from: true,
+                subFrom: true,
+                subTo: true,
                 fromLat: true,
                 fromLong: true,
                 to: true,
@@ -134,6 +140,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
                 fromLat: true,
                 fromLong: true,
                 to: true,
+                subFrom: true,
+                subTo: true,
                 toLat: true,
                 toLong: true,
                 date: true,
@@ -207,10 +215,20 @@ export async function upcomingRide({ userId }: { userId: string }) {
         });
 
         // Map UserRide to array of users directly here
-        const ridesWithUsers = filteredRides.map(({ UserRide, ...ride }) => ({
-            ...ride,
-            joinedUsers: UserRide.map((ur) => ur.user),
-        }));
+        const ridesWithUsers = filteredRides.map((ride) => {
+            const userRideArr = (ride.UserRide ?? []) as {
+                user: {
+                    fullName: string;
+                    mobileNumber: string;
+                    profilePhoto: string;
+                    gender: string;
+                };
+            }[];
+            return {
+                ...ride,
+                joinedUsers: userRideArr.map((ur) => ur.user),
+            };
+        });
 
         // Add joined info if needed
         const upcomingRides = await Promise.all(
@@ -253,6 +271,8 @@ export async function getRideById({
                 fromLat: true,
                 fromLong: true,
                 to: true,
+                subFrom: true,
+                subTo: true,
                 toLat: true,
                 toLong: true,
                 date: true,
@@ -295,7 +315,17 @@ export async function getRideById({
         if (!ride) return null;
 
         // Transform `UserRide` to `joinedUsers`
-        const joinedUsers = ride.UserRide.map((r) => r.user);
+        const userRideArr = Array.isArray(ride.UserRide)
+            ? (ride.UserRide as {
+                  user: {
+                      fullName: string;
+                      mobileNumber: string;
+                      profilePhoto: string;
+                      gender: string;
+                  };
+              }[])
+            : [];
+        const joinedUsers = userRideArr.map((r) => r.user);
 
         return {
             ...ride,
@@ -313,6 +343,8 @@ export async function editRideOfUser({
     id,
     vehicleId,
     from,
+    subFrom,
+    subTo,
     to,
     date,
     time,
@@ -335,6 +367,8 @@ export async function editRideOfUser({
                 userId,
                 vehicleId,
                 from,
+                subFrom,
+                subTo,
                 to,
                 date,
                 time,

@@ -33,6 +33,9 @@ const rideRouter = Router();
  *               from:
  *                 type: string
  *                 description: From location
+ *               subFrom:
+ *                type: string
+ *                description: Sub-location of the from location
  *               fromLat:
  *                 type: string
  *                 description: From location latitude
@@ -42,6 +45,9 @@ const rideRouter = Router();
  *               to:
  *                 type: string
  *                 description: To location
+ *               subTo:
+ *                type: string
+ *                description: Sub-location of the to location
  *               toLat:
  *                 type: string
  *                 description: To location latitude
@@ -133,6 +139,9 @@ rideRouter.get("/:id", getRide);
  *               from:
  *                 type: string
  *                 description: From location
+ *               subFrom:
+ *                 type: string
+ *                 description: Sub-location of the from location
  *               fromLat:
  *                 type: string
  *                 description: From location latitude
@@ -142,6 +151,9 @@ rideRouter.get("/:id", getRide);
  *               to:
  *                 type: string
  *                 description: To location
+ *               subTo:
+ *                 type: string
+ *                 description: Sub-location of the to location
  *               toLat:
  *                 type: string
  *                 description: To location latitude

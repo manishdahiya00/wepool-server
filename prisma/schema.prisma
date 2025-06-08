@@ -69,9 +69,11 @@ model Ride {
   vehicleId     String
   vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   from          String
+  subFrom       String
   fromLat       String
   fromLong      String
   to            String
+  subTo         String
   toLat         String
   toLong        String
   date          String
