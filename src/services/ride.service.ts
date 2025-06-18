@@ -53,25 +53,65 @@ export async function createRide({
         throw createHttpError(500, "Error creating ride");
     }
 }
+export async function searchRides({
+    from,
+    to,
+    date,
 
-export async function searchRides({ from, to, date }: ISearchRide) {
+    fromLat,
+    fromLng,
+    toLat,
+    toLng,
+    noOfSeats,
+    userId,
+}: ISearchRide) {
     try {
         const rides = await db.ride.findMany({
             where: {
-                from: {
-                    contains: from,
-                    mode: "insensitive",
-                },
-                to: {
-                    contains: to,
-                    mode: "insensitive",
-                },
-                date,
                 isCancelled: false,
                 isCompleted: false,
+                date,
+                remainingSeat: {
+                    gte: Number(noOfSeats),
+                },
+                AND: [
+                    {
+                        OR: [
+                            {
+                                from: { contains: from, mode: "insensitive" },
+                                to: { contains: to, mode: "insensitive" },
+                            },
+                            {
+                                fromLat: { not: undefined },
+                                fromLong: { not: undefined },
+                                toLat: { not: undefined },
+                                toLong: { not: undefined },
+                            },
+                        ],
+                    },
+                ],
             },
-            orderBy: [{ noOfSeats: "desc" }, { createdAt: "desc" }],
+            orderBy: [{ createdAt: "desc" }],
             select: {
+                id: true,
+                userId: true,
+                from: true,
+                fromLat: true,
+                fromLong: true,
+                to: true,
+                toLat: true,
+                toLong: true,
+                subFrom: true,
+                subTo: true,
+                date: true,
+                time: true,
+                noOfSeats: true,
+                pricePerSeat: true,
+                summary: true,
+                remainingSeat: true,
+                vehicle: {
+                    select: { id: true, brand: true, model: true, color: true },
+                },
                 user: {
                     select: {
                         fullName: true,
@@ -79,15 +119,200 @@ export async function searchRides({ from, to, date }: ISearchRide) {
                         mobileNumber: true,
                     },
                 },
+                StopOver: {
+                    select: { id: true, title: true },
+                },
+                UserRide: {
+                    select: {
+                        user: {
+                            select: {
+                                fullName: true,
+                                mobileNumber: true,
+                                profilePhoto: true,
+                                gender: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        // Filter by proximity
+        const fromLatNum = parseFloat(fromLat);
+        const fromLngNum = parseFloat(fromLng);
+        const toLatNum = parseFloat(toLat);
+        const toLngNum = parseFloat(toLng);
+        const RADIUS_KM = 10;
+
+        const isNear = (
+            lat1: number,
+            lng1: number,
+            lat2: number,
+            lng2: number,
+        ) => {
+            const toRad = (x: number) => (x * Math.PI) / 180;
+            const R = 6371;
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lng2 - lng1);
+            const a =
+                Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) *
+                    Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c <= RADIUS_KM;
+        };
+
+        const filtered = rides.filter((ride) => {
+            const rFromLat = parseFloat(ride.fromLat);
+            const rFromLng = parseFloat(ride.fromLong);
+            const rToLat = parseFloat(ride.toLat);
+            const rToLng = parseFloat(ride.toLong);
+            return (
+                isNear(fromLatNum, fromLngNum, rFromLat, rFromLng) &&
+                isNear(toLatNum, toLngNum, rToLat, rToLng)
+            );
+        });
+
+        const finalRides = await Promise.all(
+            filtered.map(async (ride) => {
+                const rideConfirmed = await db.userRide.findFirst({
+                    where: { rideId: ride.id, userId },
+                });
+
+                return {
+                    ...ride,
+                    joined: !!rideConfirmed,
+                    yourRide: ride.userId === userId,
+                    joinedUsers: ride.UserRide.map((ur) => ur.user),
+                };
+            }),
+        );
+
+        return finalRides;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching rides");
+    }
+}
+
+export async function upcomingRide({ userId }: { userId: string }) {
+    try {
+        const now = DateTime.now().setZone("Asia/Kolkata");
+
+        // Step 1: Get all rides user has joined via UserRide
+        const joinedUserRides = await db.userRide.findMany({
+            where: {
+                userId,
+                ride: {
+                    isCompleted: false,
+                },
+            },
+            select: {
+                ride: {
+                    select: {
+                        id: true,
+                        userId: true,
+                        isCancelled: true,
+                        cancelledAt: true,
+                        from: true,
+                        fromLat: true,
+                        fromLong: true,
+                        to: true,
+                        toLat: true,
+                        toLong: true,
+                        subFrom: true,
+                        subTo: true,
+                        date: true,
+                        time: true,
+                        noOfSeats: true,
+                        pricePerSeat: true,
+                        summary: true,
+                        remainingSeat: true,
+                        vehicle: {
+                            select: {
+                                id: true,
+                                brand: true,
+                                model: true,
+                                color: true,
+                            },
+                        },
+                        user: {
+                            select: {
+                                fullName: true,
+                                profilePhoto: true,
+                            },
+                        },
+                        StopOver: {
+                            select: {
+                                id: true,
+                                title: true,
+                            },
+                        },
+                        UserRide: {
+                            select: {
+                                user: {
+                                    select: {
+                                        fullName: true,
+                                        mobileNumber: true,
+                                        profilePhoto: true,
+                                        gender: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        // Step 2: Flatten rides and tag as joined
+        const joinedRides = joinedUserRides
+            .map(({ ride }) => {
+                const rideDateTime = DateTime.fromFormat(
+                    `${ride.date} ${ride.time}`,
+                    "MMM dd, yyyy hh:mm a",
+                    { zone: "Asia/Kolkata" },
+                );
+
+                if (!rideDateTime.isValid) return null;
+                if (rideDateTime <= now) return null;
+
+                if (ride.isCancelled && ride.cancelledAt) {
+                    const cancelledAt = DateTime.fromJSDate(
+                        ride.cancelledAt,
+                    ).setZone("Asia/Kolkata");
+                    if (now > cancelledAt.plus({ hours: 36 })) return null;
+                }
+
+                return {
+                    ...ride,
+                    joined: true,
+                    yourRide: ride.userId === userId,
+                    joinedUsers: ride.UserRide.map((ur) => ur.user),
+                };
+            })
+            .filter(Boolean);
+
+        // Step 3: Get rides created by the user that they haven’t joined via UserRide
+        const createdRides = await db.ride.findMany({
+            where: {
+                userId,
+                isCompleted: false,
+            },
+            select: {
                 id: true,
+                userId: true,
+                isCancelled: true,
+                cancelledAt: true,
                 from: true,
-                subFrom: true,
-                subTo: true,
                 fromLat: true,
                 fromLong: true,
                 to: true,
                 toLat: true,
                 toLong: true,
+                subFrom: true,
+                subTo: true,
                 date: true,
                 time: true,
                 noOfSeats: true,
@@ -102,60 +327,16 @@ export async function searchRides({ from, to, date }: ISearchRide) {
                         color: true,
                     },
                 },
-                StopOver: {
-                    select: {
-                        id: true,
-                        title: true,
-                    },
-                },
-            },
-        });
-        return rides;
-    } catch (error) {
-        logger.error(error);
-        throw createHttpError(500, "Error fetching rides");
-    }
-}
-export async function upcomingRide({ userId }: { userId: string }) {
-    try {
-        const rides = await db.ride.findMany({
-            where: {
-                userId,
-                isCompleted: false,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-            select: {
-                id: true,
-                isCancelled: true,
-                cancelledAt: true,
                 user: {
                     select: {
                         fullName: true,
                         profilePhoto: true,
                     },
                 },
-                from: true,
-                fromLat: true,
-                fromLong: true,
-                to: true,
-                subFrom: true,
-                subTo: true,
-                toLat: true,
-                toLong: true,
-                date: true,
-                time: true,
-                noOfSeats: true,
-                pricePerSeat: true,
-                summary: true,
-                remainingSeat: true,
-                vehicle: {
+                StopOver: {
                     select: {
                         id: true,
-                        brand: true,
-                        model: true,
-                        color: true,
+                        title: true,
                     },
                 },
                 UserRide: {
@@ -170,75 +351,42 @@ export async function upcomingRide({ userId }: { userId: string }) {
                         },
                     },
                 },
-                StopOver: {
-                    select: {
-                        id: true,
-                        title: true,
-                    },
-                },
             },
         });
 
-        // Filter and handle date logic as you already have
-        const now = DateTime.now().setZone("Asia/Kolkata");
-
-        const filteredRides = rides.filter((ride) => {
-            const rideDateTime = DateTime.fromFormat(
-                `${ride.date} ${ride.time}`,
-                "MMM dd, yyyy hh:mm a",
-                { zone: "Asia/Kolkata" },
-            );
-
-            if (!rideDateTime.isValid) {
-                logger.error(
-                    `Invalid date format for ride: ${ride.date} ${ride.time}`,
+        // Filter created rides that are upcoming and not duplicated from UserRide
+        const filteredCreated = createdRides
+            .filter((ride) => {
+                const rideDateTime = DateTime.fromFormat(
+                    `${ride.date} ${ride.time}`,
+                    "MMM dd, yyyy hh:mm a",
+                    { zone: "Asia/Kolkata" },
                 );
-                return false;
-            }
 
-            if (rideDateTime <= now) return false;
+                if (!rideDateTime.isValid) return false;
+                if (rideDateTime <= now) return false;
 
-            if (ride.isCancelled) {
-                if (!ride.cancelledAt) {
-                    logger.warn(
-                        `Cancelled ride ${ride.id} is missing cancelledAt`,
-                    );
-                    return false;
+                if (ride.isCancelled && ride.cancelledAt) {
+                    const cancelledAt = DateTime.fromJSDate(
+                        ride.cancelledAt,
+                    ).setZone("Asia/Kolkata");
+                    if (now > cancelledAt.plus({ hours: 36 })) return false;
                 }
-                const cancelledAt = DateTime.fromJSDate(
-                    ride.cancelledAt,
-                ).setZone("Asia/Kolkata");
-                return now < cancelledAt.plus({ hours: 36 });
-            }
 
-            return true;
-        });
-
-        // Map UserRide to array of users directly here
-        const ridesWithUsers = filteredRides.map((ride) => {
-            const userRideArr = (ride.UserRide ?? []) as {
-                user: {
-                    fullName: string;
-                    mobileNumber: string;
-                    profilePhoto: string;
-                    gender: string;
-                };
-            }[];
-            return {
+                const alreadyIncluded = joinedRides.find(
+                    (r) => r!.id === ride.id,
+                );
+                return !alreadyIncluded;
+            })
+            .map((ride) => ({
                 ...ride,
-                joinedUsers: userRideArr.map((ur) => ur.user),
-            };
-        });
+                joined: false,
+                yourRide: true,
+                joinedUsers: ride.UserRide.map((ur) => ur.user),
+            }));
 
-        // Add joined info if needed
-        const upcomingRides = await Promise.all(
-            ridesWithUsers.map(async (ride) => {
-                const joined = await isRideJoined({ rideId: ride.id, userId });
-                return { ...ride, joined };
-            }),
-        );
-
-        return upcomingRides;
+        // Step 4: Merge all
+        return [...joinedRides, ...filteredCreated];
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching upcoming rides");

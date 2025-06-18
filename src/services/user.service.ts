@@ -228,3 +228,47 @@ export const getUserCreatedRides = async (userId: string) => {
         throw createHttpError(500, "Error fetching user created rides");
     }
 };
+
+export const getAllUsers = async (page: number, limit: number) => {
+    try {
+        const skip = (page - 1) * limit;
+
+        const [users, total] = await Promise.all([
+            db.user.findMany({
+                skip,
+                take: limit,
+                orderBy: {
+                    createdAt: "desc",
+                },
+                select: {
+                    id: true,
+                    fullName: true,
+                    email: true,
+                    isVerified: true,
+                    gender: true,
+                    mobileNumber: true,
+                    dob: true,
+                    deviceId: true,
+                    deviceType: true,
+                    deviceName: true,
+                    isBanned: true,
+                    securityToken: true,
+                    latitude: true,
+                    longitude: true,
+                    profilePhoto: true,
+                    createdAt: true,
+                    rides: true,
+                    StopOver: true,
+                    UserRide: true,
+                    vehicles: true,
+                },
+            }),
+            db.user.count(),
+        ]);
+
+        return { users, total };
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error fetching all users");
+    }
+};

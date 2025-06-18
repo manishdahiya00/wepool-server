@@ -233,11 +233,10 @@ rideRouter.put("/", editRide);
  *         description: Internal server error
  */
 rideRouter.delete("/cancel", cancelRide);
-
 /** @swagger
  * /ride/search:
  *   post:
- *     summary: Search rides
+ *     summary: Search rides using pickup/destination coordinates
  *     tags: [Ride]
  *     security:
  *       - bearerAuth: []
@@ -250,16 +249,28 @@ rideRouter.delete("/cancel", cancelRide);
  *             properties:
  *               from:
  *                 type: string
- *                 description: From location
+ *                 description: From location name (pickup)
+ *               fromLat:
+ *                 type: string
+ *                 description: Latitude of pickup point
+ *               fromLng:
+ *                 type: string
+ *                 description: Longitude of pickup point
  *               to:
  *                 type: string
- *                 description: To location
+ *                 description: To location name (destination)
+ *               toLat:
+ *                 type: string
+ *                 description: Latitude of destination point
+ *               toLng:
+ *                 type: string
+ *                 description: Longitude of destination point
  *               date:
  *                 type: string
- *                 description: Date of the ride
+ *                 description: Date of the ride (e.g., "Jun 20, 2025")
  *               noOfSeats:
  *                 type: number
- *                 description: Number of seats
+ *                 description: Minimum number of seats required
  *     responses:
  *       200:
  *         description: Rides fetched successfully
@@ -268,6 +279,7 @@ rideRouter.delete("/cancel", cancelRide);
  *       500:
  *         description: Internal server error
  */
+
 rideRouter.post("/search", searchRide);
 
 /** @swagger

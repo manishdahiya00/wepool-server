@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-    deleteUsers,
     forgotPassword,
     login,
     register,
@@ -244,23 +243,23 @@ authRouter.post("/verify-otp", verifyOtp);
  */
 authRouter.post("/reset-password", resetPassword);
 
-/**
- * @swagger
- * /auth/delete-users:
- *   post:
- *     tags:
- *       - Auth
- *     description: Delete all users, Not for production use
- *     responses:
- *       200:
- *         description: OK
- *       400:
- *         description: Bad Request
- *       500:
- *         description: Internal Server Error
- *
- */
-authRouter.post("/delete-users", deleteUsers);
+// /**
+//  * @swagger
+//  * /auth/delete-users:
+//  *   post:
+//  *     tags:
+//  *       - Auth
+//  *     description: Delete all users, Not for production use
+//  *     responses:
+//  *       200:
+//  *         description: OK
+//  *       400:
+//  *         description: Bad Request
+//  *       500:
+//  *         description: Internal Server Error
+//  *
+//  */
+// authRouter.post("/delete-users", deleteUsers);
 
 const authRoutes = Router().use("/auth", authRouter);
 

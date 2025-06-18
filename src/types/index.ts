@@ -78,8 +78,13 @@ export interface IEditRide {
 export interface ISearchRide {
     from: string;
     to: string;
+    fromLat: string;
+    fromLng: string;
+    toLat: string;
+    toLng: string;
     date: string;
     noOfSeats: number;
+    userId: string;
 }
 
 export interface ICreateStopOvers {

@@ -1,4 +1,3 @@
-import { sub } from "date-fns";
 import { z } from "zod";
 
 export const createRideSchema = z.object({
@@ -21,7 +20,11 @@ export const createRideSchema = z.object({
 
 export const searchRideSchema = z.object({
     from: z.string(),
+    fromLat: z.string(),
+    fromLng: z.string(),
     to: z.string(),
+    toLat: z.string(),
+    toLng: z.string(),
     date: z.string(),
     noOfSeats: z.number(),
 });

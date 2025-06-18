@@ -9,13 +9,13 @@ import rideRoutes from "./routes/ride.route";
 import { rateLimit, RateLimitRequestHandler } from "express-rate-limit";
 import userRoutes from "./routes/user.route";
 import stopoverRoutes from "./routes/stopover.route";
+import expressBasicAuth from "express-basic-auth";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const rateLimiter: RateLimitRequestHandler = rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: 60,
@@ -31,7 +31,11 @@ const rateLimiter: RateLimitRequestHandler = rateLimit({
 
 app.use(rateLimiter);
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+const swaggerAuth = expressBasicAuth({
+    users: { ["admin"]: process.env.SWAGGER_AUTH_PASSWORD! },
+    challenge: true,
+});
+app.use("/docs", swaggerAuth, swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get("/health", (_req, res) => {
     res.send({

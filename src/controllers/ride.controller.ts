@@ -111,13 +111,19 @@ export const searchRide = async (req: Request, res: Response) => {
             return;
         }
 
-        const { from, to, date, noOfSeats } = result.data;
+        const { from, fromLat, fromLng, to, toLat, toLng, date, noOfSeats } =
+            result.data;
 
         const rides = await searchRides({
             from,
+            fromLat,
+            fromLng,
             to,
+            toLat,
+            toLng,
             date,
             noOfSeats,
+            userId: req.user!.id,
         });
 
         res.status(200).json({
@@ -145,7 +151,6 @@ export const upcomingRides = async (req: Request, res: Response) => {
             message: "Upcoming Rides fetched successfully",
             rides,
         });
-        return;
     } catch (error) {
         logger.error(error);
         res.status(500).json({
