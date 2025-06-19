@@ -53,45 +53,50 @@ export async function createRide({
         throw createHttpError(500, "Error creating ride");
     }
 }
-export async function searchRides({
-    from,
-    to,
-    date,
 
+export async function searchRides({
     fromLat,
     fromLng,
     toLat,
     toLng,
-    noOfSeats,
+    date,
     userId,
 }: ISearchRide) {
     try {
+        const fromLatNum = parseFloat(fromLat);
+        const fromLngNum = parseFloat(fromLng);
+        const toLatNum = parseFloat(toLat);
+        const toLngNum = parseFloat(toLng);
+        const RADIUS_KM = 2;
+        const now = DateTime.now().setZone("Asia/Kolkata");
+
+        const isNear = (
+            lat1: number,
+            lng1: number,
+            lat2: number,
+            lng2: number,
+        ) => {
+            const toRad = (x: number) => (x * Math.PI) / 180;
+            const R = 6371;
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lng2 - lng1);
+            const a =
+                Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) *
+                    Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c <= RADIUS_KM;
+        };
+
         const rides = await db.ride.findMany({
             where: {
                 isCancelled: false,
                 isCompleted: false,
-                date,
-                remainingSeat: {
-                    gte: Number(noOfSeats),
-                },
-                // AND: [
-                //     {
-                //         OR: [
-                //             {
-                //                 from: { contains: from, mode: "insensitive" },
-                //                 to: { contains: to, mode: "insensitive" },
-                //             },
-                //             {
-                //                 fromLat: { not: undefined },
-                //                 fromLong: { not: undefined },
-                //                 toLat: { not: undefined },
-                //                 toLong: { not: undefined },
-                //             },
-                //         ],
-                //     },
-                // ],
+                remainingSeat: { gt: 0 },
+                date: date,
             },
-            orderBy: [{ createdAt: "desc" }],
+            orderBy: { createdAt: "desc" },
             select: {
                 id: true,
                 userId: true,
@@ -119,9 +124,7 @@ export async function searchRides({
                         mobileNumber: true,
                     },
                 },
-                StopOver: {
-                    select: { id: true, title: true },
-                },
+                StopOver: { select: { id: true, title: true } },
                 UserRide: {
                     select: {
                         user: {
@@ -137,52 +140,38 @@ export async function searchRides({
             },
         });
 
-        // Filter by proximity
-        const fromLatNum = parseFloat(fromLat);
-        const fromLngNum = parseFloat(fromLng);
-        const toLatNum = parseFloat(toLat);
-        const toLngNum = parseFloat(toLng);
-        const RADIUS_KM = 10;
+        const filtered = rides
+            .filter((ride) => {
+                const rFromLat = parseFloat(ride.fromLat);
+                const rFromLng = parseFloat(ride.fromLong);
+                const rToLat = parseFloat(ride.toLat);
+                const rToLng = parseFloat(ride.toLong);
 
-        const isNear = (
-            lat1: number,
-            lng1: number,
-            lat2: number,
-            lng2: number,
-        ) => {
-            const toRad = (x: number) => (x * Math.PI) / 180;
-            const R = 6371;
-            const dLat = toRad(lat2 - lat1);
-            const dLon = toRad(lng2 - lng1);
-            const a =
-                Math.sin(dLat / 2) ** 2 +
-                Math.cos(toRad(lat1)) *
-                    Math.cos(toRad(lat2)) *
-                    Math.sin(dLon / 2) ** 2;
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c <= RADIUS_KM;
-        };
+                const rideDateTime = DateTime.fromFormat(
+                    `${ride.date} ${ride.time}`,
+                    "MMM dd, yyyy hh:mm a",
+                    { zone: "Asia/Kolkata" },
+                );
 
-        const filtered = rides.filter((ride) => {
-            const rFromLat = parseFloat(ride.fromLat);
-            const rFromLng = parseFloat(ride.fromLong);
-            const rToLat = parseFloat(ride.toLat);
-            const rToLng = parseFloat(ride.toLong);
-            return (
-                isNear(fromLatNum, fromLngNum, rFromLat, rFromLng) &&
-                isNear(toLatNum, toLngNum, rToLat, rToLng)
-            );
-        });
+                return (
+                    isNear(fromLatNum, fromLngNum, rFromLat, rFromLng) &&
+                    isNear(toLatNum, toLngNum, rToLat, rToLng) &&
+                    ride.remainingSeat > 0 &&
+                    rideDateTime.isValid &&
+                    rideDateTime > now
+                );
+            })
+            .sort((a, b) => b.remainingSeat - a.remainingSeat);
 
         const finalRides = await Promise.all(
             filtered.map(async (ride) => {
-                const rideConfirmed = await db.userRide.findFirst({
+                const joined = await db.userRide.findFirst({
                     where: { rideId: ride.id, userId },
                 });
 
                 return {
                     ...ride,
-                    joined: !!rideConfirmed,
+                    joined: !!joined,
                     yourRide: ride.userId === userId,
                     joinedUsers: ride.UserRide.map((ur) => ur.user),
                 };
