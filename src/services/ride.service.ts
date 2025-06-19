@@ -74,22 +74,22 @@ export async function searchRides({
                 remainingSeat: {
                     gte: Number(noOfSeats),
                 },
-                AND: [
-                    {
-                        OR: [
-                            {
-                                from: { contains: from, mode: "insensitive" },
-                                to: { contains: to, mode: "insensitive" },
-                            },
-                            {
-                                fromLat: { not: undefined },
-                                fromLong: { not: undefined },
-                                toLat: { not: undefined },
-                                toLong: { not: undefined },
-                            },
-                        ],
-                    },
-                ],
+                // AND: [
+                //     {
+                //         OR: [
+                //             {
+                //                 from: { contains: from, mode: "insensitive" },
+                //                 to: { contains: to, mode: "insensitive" },
+                //             },
+                //             {
+                //                 fromLat: { not: undefined },
+                //                 fromLong: { not: undefined },
+                //                 toLat: { not: undefined },
+                //                 toLong: { not: undefined },
+                //             },
+                //         ],
+                //     },
+                // ],
             },
             orderBy: [{ createdAt: "desc" }],
             select: {
