@@ -230,6 +230,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
                             select: {
                                 fullName: true,
                                 profilePhoto: true,
+                                mobileNumber: true,
+                                gender: true,
                             },
                         },
                         StopOver: {
@@ -556,6 +558,7 @@ export async function cancelRideOfUser({
         throw createHttpError(500, "Error cancelling ride");
     }
 }
+
 export const joinRideOfUser = async ({
     userId,
     rideId,
