@@ -322,6 +322,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
                     select: {
                         fullName: true,
                         profilePhoto: true,
+                        mobileNumber: true,
+                        gender: true,
                     },
                 },
                 StopOver: {
