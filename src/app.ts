@@ -35,7 +35,20 @@ const swaggerAuth = expressBasicAuth({
     users: { ["admin"]: process.env.SWAGGER_AUTH_PASSWORD! },
     challenge: true,
 });
+
 app.use("/docs", swaggerAuth, swaggerUi.serve, swaggerUi.setup(specs));
+
+app.get("/delete-account", (req, res) => {
+    res.send(`
+    <html>
+      <head><title>Delete Your Account</title></head>
+      <body style="font-family:sans-serif;padding:2rem;display:flex;justify-content:center;flex-direction:column;width:100%;height:100vh;align-items:center;text-align:center;background-color:#f5f5f5;color:#333;margin:0;box-sizing:border-box;font-size:24px;">
+        <h1>Delete Your Account</h1>
+        <p>If you want to delete your account, please contact us at <a href="mailto:akrajora10@gmail.com">akrajora10@gmail.com</a></p>
+      </body>
+    </html>
+  `);
+});
 
 app.get("/health", (_req, res) => {
     res.send({
