@@ -440,13 +440,13 @@ export const checkUserExists = async (req: Request, res: Response) => {
         const user = await findUserByEmail(email);
         if (user) {
             res.status(200).json({
-                success: true,
+                success: false,
                 message: "User with this email already exists",
             });
             return;
         }
         res.status(200).json({
-            success: false,
+            success: true,
             message: "User does not exist with this email",
         });
     } catch (error) {
