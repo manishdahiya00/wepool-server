@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    checkUserExists,
     forgotPassword,
     login,
     register,
@@ -68,6 +69,36 @@ const authRouter = Router();
  *
  */
 authRouter.post("/register", register);
+
+/**
+ * @swagger
+ * /auth/check-user-exists:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     description: Check if a user already exists by email
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 minLength: 3
+ *                 maxLength: 50
+ *     responses:
+ *       200:
+ *         description: User exists
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ *
+ */
+authRouter.post("/check-user-exists", checkUserExists);
 
 /**
  * @swagger

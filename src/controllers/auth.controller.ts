@@ -433,3 +433,28 @@ export const deleteUsers = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const checkUserExists = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body as { email: string };
+        const user = await findUserByEmail(email);
+        if (user) {
+            res.status(200).json({
+                success: true,
+                message: "User with this email already exists",
+            });
+            return;
+        }
+        res.status(200).json({
+            success: false,
+            message: "User does not exist with this email",
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+        return;
+    }
+};
