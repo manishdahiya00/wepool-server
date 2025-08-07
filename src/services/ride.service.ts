@@ -149,7 +149,7 @@ export async function searchRides({
 
                 const rideDateTime = DateTime.fromFormat(
                     `${ride.date} ${ride.time}`,
-                    "MMM dd, yyyy hh:mm a",
+                    "MMM d, yyyy hh:mm a",
                     { zone: "Asia/Kolkata" },
                 );
 
@@ -262,7 +262,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
             .map(({ ride }) => {
                 const rideDateTime = DateTime.fromFormat(
                     `${ride.date} ${ride.time}`,
-                    "MMM dd, yyyy hh:mm a",
+                    "MMM d, yyyy hh:mm a",
                     { zone: "Asia/Kolkata" },
                 );
 
@@ -352,7 +352,7 @@ export async function upcomingRide({ userId }: { userId: string }) {
             .filter((ride) => {
                 const rideDateTime = DateTime.fromFormat(
                     `${ride.date} ${ride.time}`,
-                    "MMM dd, yyyy hh:mm a",
+                    "MMM d, yyyy hh:mm a",
                     { zone: "Asia/Kolkata" },
                 );
 
