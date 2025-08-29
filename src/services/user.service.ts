@@ -56,8 +56,8 @@ export async function createUser({
                 profilePhoto,
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error creating user");
     }
 }
@@ -71,8 +71,8 @@ export async function updateUserOTP(userId: string, otp: string) {
                 otpExpiresAt: new Date(Date.now() + 60 * 1000), // 60 seconds
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating OTP");
     }
 }
@@ -87,8 +87,8 @@ export async function verifyUser(userId: string) {
                 otpExpiresAt: new Date(Date.now()),
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error verifying user");
     }
 }
@@ -98,8 +98,8 @@ export async function findUserByEmail(email: string) {
         return await db.user.findFirst({
             where: { email: { equals: email, mode: "insensitive" } },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error finding user by email");
     }
 }
@@ -110,8 +110,8 @@ export async function updateUserSecurityToken(userId: string, token: string) {
             where: { id: userId },
             data: { securityToken: token },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating security token");
     }
 }
@@ -122,8 +122,8 @@ export async function updateUserPassword(userId: string, password: string) {
             where: { id: userId },
             data: { password },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating password");
     }
 }
@@ -132,8 +132,8 @@ export async function findUserBySecurityToken(token: string) {
         return await db.user.findFirst({
             where: { securityToken: { equals: token, mode: "insensitive" } },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error finding user by security token");
     }
 }
@@ -141,8 +141,8 @@ export async function findUserBySecurityToken(token: string) {
 export async function deleteAllUsers() {
     try {
         return await db.user.deleteMany();
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error deleting all users");
     }
 }
@@ -153,8 +153,8 @@ export async function updateUser(user: User) {
             where: { id: user.id },
             data: user,
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating user");
     }
 }
@@ -177,8 +177,8 @@ export const getUserById = async (userId: string) => {
             },
         });
         return user;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error finding user");
     }
 };
@@ -228,8 +228,8 @@ export const getUserCreatedRides = async (userId: string) => {
             },
         });
         return rides;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching user created rides");
     }
 };
@@ -272,8 +272,8 @@ export const getAllUsers = async (page: number, limit: number) => {
         ]);
 
         return { users, total };
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching all users");
     }
 };
@@ -288,11 +288,12 @@ export const editProfileService = async (
             data,
         });
         return user;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating user");
     }
 };
+
 export const editProfileImageService = async (
     userId: string,
     file: Express.Multer.File,
@@ -333,8 +334,8 @@ export const editProfileImageService = async (
         });
 
         return user;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating user profile image");
     }
 };

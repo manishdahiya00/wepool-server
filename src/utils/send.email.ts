@@ -25,7 +25,7 @@ export async function sendOtpEmail(otp: string, email: string) {
         const info = await transporter.sendMail(mailOptions);
         logger.info(`✅ Email sent: ${info.response}`);
         logger.info(`📩 Message ID: ${info.messageId}`);
-    } catch (error) {
+    } catch (error: any) {
         logger.error(`❌ Email failed: ${error}`);
         throw createHttpError(500, "Error sending email");
     }

@@ -49,8 +49,8 @@ export const getUser = async (req: Request, res: Response) => {
                     "https://play.google.com/store/apps/details?id=com.arun.wepool",
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -81,8 +81,8 @@ export const editProfile = async (req: Request, res: Response) => {
             success: true,
             message: "Profile updated successfully",
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -117,8 +117,8 @@ export const userCreatedRides = async (req: Request, res: Response) => {
             message: "Rides fetched successfully",
             rides,
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -151,8 +151,8 @@ export const allUsers = async (req: Request, res: Response) => {
                 totalPages: Math.ceil(total / limit),
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -190,8 +190,8 @@ export const editProfileImage = async (req: Request, res: Response) => {
             success: true,
             message: "Profile image updated successfully",
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

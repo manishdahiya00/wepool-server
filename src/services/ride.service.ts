@@ -48,8 +48,8 @@ export async function createRide({
                 },
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error creating ride");
     }
 }
@@ -179,8 +179,8 @@ export async function searchRides({
         );
 
         return finalRides;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching rides");
     }
 }
@@ -380,8 +380,8 @@ export async function upcomingRide({ userId }: { userId: string }) {
 
         // Step 4: Merge all
         return [...joinedRides, ...filteredCreated];
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching upcoming rides");
     }
 }
@@ -473,8 +473,8 @@ export async function getRideById({
             joinedUsers,
             UserRide: undefined,
         };
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching ride");
     }
 }
@@ -531,8 +531,8 @@ export async function editRideOfUser({
                 },
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error editing ride");
     }
 }
@@ -555,8 +555,8 @@ export async function cancelRideOfUser({
                 cancelledAt: new Date(),
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error cancelling ride");
     }
 }
@@ -585,8 +585,8 @@ export const joinRideOfUser = async ({
                 },
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error joining ride");
     }
 };
@@ -599,8 +599,8 @@ export const getRideForJoining = async ({ rideId }: { rideId: string }) => {
             },
         });
         return ride;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching ride");
     }
 };
@@ -621,8 +621,8 @@ export const isRideJoined = async ({
         });
 
         return !!isJoined;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching ride");
     }
 };

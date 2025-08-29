@@ -12,8 +12,8 @@ export async function createResetPasswordToken(userId: string, token: string) {
                 otpExpiresAt: new Date(Date.now() + 60 * 1000), // 60 seconds
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error creating reset password token");
     }
 }
@@ -24,8 +24,8 @@ export async function findResetPasswordToken(userId: string) {
             where: { userId },
         });
         return token;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error finding reset password token");
     }
 }
@@ -33,8 +33,8 @@ export async function findResetPasswordToken(userId: string) {
 export async function deleteResetPasswordToken(userId: string) {
     try {
         await db.passwordReset.deleteMany({ where: { userId } });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error deleting reset password token");
     }
 }
@@ -53,8 +53,8 @@ export async function updateResetPasswordToken(
                 resetTokenExpiresAt: new Date(Date.now() + 60 * 1000), // 60seconds
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating reset password token");
     }
 }

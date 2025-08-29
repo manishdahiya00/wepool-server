@@ -18,8 +18,8 @@ export async function createStopOvers({
         });
 
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error creating stopovers");
     }
 }
@@ -76,8 +76,8 @@ export async function getStopOverById({
             },
         });
         return stopOver;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching stopover");
     }
 }
@@ -104,8 +104,8 @@ export async function getStopOversOfRide({
             },
         });
         return stopOvers;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching stopovers");
     }
 }
@@ -124,8 +124,8 @@ export async function removeStopOverById({
                 userId,
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error removing stopover");
     }
 }

@@ -91,8 +91,8 @@ export const addRide = async (req: Request, res: Response) => {
             message: "Ride published successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -132,8 +132,8 @@ export const searchRide = async (req: Request, res: Response) => {
             rides,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -151,8 +151,8 @@ export const upcomingRides = async (req: Request, res: Response) => {
             message: "Upcoming Rides fetched successfully",
             rides,
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -185,8 +185,8 @@ export const getRide = async (req: Request, res: Response) => {
             ride,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -278,8 +278,8 @@ export const editRide = async (req: Request, res: Response) => {
             message: "Ride edited successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -332,8 +332,8 @@ export const cancelRide = async (req: Request, res: Response) => {
             message: "Ride cancelled successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -405,8 +405,8 @@ export const joinRide = async (req: Request, res: Response) => {
             message: "Ride joined successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

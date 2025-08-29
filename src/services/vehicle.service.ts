@@ -18,8 +18,8 @@ export async function createVehicle({
                 color,
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error creating vehicle");
     }
 }
@@ -30,8 +30,8 @@ export async function findVehicleById(vehicleId: string) {
             where: { id: vehicleId },
         });
         return vehicle;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error finding vehicle by id");
     }
 }
@@ -51,8 +51,8 @@ export async function editVehicle({
                 color,
             },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error updating vehicle");
     }
 }
@@ -74,8 +74,8 @@ export async function getAllVehicles(userId: string) {
             },
         });
         return vehicles;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error fetching vehicles");
     }
 }
@@ -85,8 +85,8 @@ export async function deleteSingleVehicle(vehicleId: string) {
         await db.vehicle.delete({
             where: { id: vehicleId },
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         throw createHttpError(500, "Error deleting vehicle");
     }
 }

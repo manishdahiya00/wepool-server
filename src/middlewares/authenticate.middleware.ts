@@ -33,8 +33,8 @@ export const authenticateUser = async (
         }
         req.user = validUser;
         next();
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

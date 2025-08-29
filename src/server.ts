@@ -9,7 +9,7 @@ const startServer = () => {
         app.listen(PORT, () => {
             logger.info(`Server is running on http://localhost:${PORT}`);
         });
-    } catch (error) {
+    } catch (error: any) {
         logger.error("Error starting server: ", error);
         process.exit(1);
     }

@@ -139,8 +139,8 @@ export const register = async (req: Request, res: Response) => {
             token: newUser.securityToken,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -203,8 +203,8 @@ export const login = async (req: Request, res: Response) => {
             token: updatedUser.securityToken,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -265,8 +265,8 @@ export const verifyRegisterOTP = async (req: Request, res: Response) => {
             message: "Verified successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -302,8 +302,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
             message: "OTP sent to your email",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -351,8 +351,8 @@ export const verifyOtp = async (req: Request, res: Response) => {
             resetToken: resetSessionToken,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -406,8 +406,8 @@ export const resetPassword = async (req: Request, res: Response) => {
             message: "Password reset successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -424,8 +424,8 @@ export const deleteUsers = async (req: Request, res: Response) => {
             message: "All users deleted successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -449,8 +449,8 @@ export const checkUserExists = async (req: Request, res: Response) => {
             success: true,
             message: "User does not exist with this email",
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

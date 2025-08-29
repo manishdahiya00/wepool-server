@@ -138,7 +138,7 @@ userRouter.post("/appOpen", async (req: Request, res: Response) => {
             message: "App Opened Successfully",
             user: updatedUser,
         });
-    } catch (error) {
+    } catch (error: any) {
         logger.error("Error in appOpen:", error);
         res.status(500).json({
             success: false,
@@ -190,7 +190,7 @@ userRouter.post("/appOpen", async (req: Request, res: Response) => {
 userRouter.get("/all", async (req: Request, res: Response) => {
     try {
         await allUsers(req, res);
-    } catch (error) {
+    } catch (error: any) {
         logger.error("Error in allUsers:", error);
         res.status(500).json({
             success: false,
@@ -238,7 +238,7 @@ userRouter.get("/all", async (req: Request, res: Response) => {
 userRouter.put("/editProfile", async (req: Request, res: Response) => {
     try {
         await editProfile(req, res);
-    } catch (error) {
+    } catch (error: any) {
         logger.error("Error in editProfile:", error);
         res.status(500).json({
             success: false,
@@ -288,7 +288,7 @@ userRouter.put(
     async (req: Request, res: Response) => {
         try {
             await editProfileImage(req, res);
-        } catch (error) {
+        } catch (error: any) {
             logger.error("Error in editProfileImage:", error);
             res.status(500).json({
                 success: false,

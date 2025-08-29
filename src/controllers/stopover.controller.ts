@@ -38,8 +38,8 @@ export const addStopOver = async (req: Request, res: Response) => {
             message: "Stopover added successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -72,8 +72,8 @@ export const getStopOver = async (req: Request, res: Response) => {
             stopOver,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -111,8 +111,8 @@ export const getStopOvers = async (req: Request, res: Response) => {
             stopOvers,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -146,8 +146,8 @@ export const removeStopOver = async (req: Request, res: Response) => {
             message: "Stopover removed successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

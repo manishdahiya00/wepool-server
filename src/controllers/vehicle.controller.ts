@@ -41,8 +41,8 @@ export const addvehicle = async (req: Request, res: Response) => {
             vehicle: newVehicle,
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -90,8 +90,8 @@ export const editvehicle = async (req: Request, res: Response) => {
             message: "Vehicle updated successfully",
         });
         return;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -108,8 +108,8 @@ export const allVehicles = async (req: Request, res: Response) => {
             message: "All vehicles fetched successfully",
             vehicles,
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
@@ -150,8 +150,8 @@ export const deleteVehicle = async (req: Request, res: Response) => {
             success: true,
             message: "Vehicle deleted successfully",
         });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logger.error(error.stack);
         res.status(500).json({
             success: false,
             message: "Internal Server Error",
