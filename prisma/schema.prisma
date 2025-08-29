@@ -8,24 +8,27 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  securityToken String    @unique
-  fullName      String
-  deviceId      String
-  deviceType    String
-  deviceName    String
-  email         String    @unique
-  password      String
-  dob           String
-  mobileNumber  String
-  isVerified    Boolean   @default(false)
-  hashedOtp     String?
-  otpExpiresAt  DateTime?
-  isBanned      Boolean   @default(false)
-  profilePhoto  String
-  gender        String
-  latitude      String?
-  longitude     String?
+  id                   String    @id @default(uuid())
+  securityToken        String    @unique
+  fullName             String
+  deviceId             String
+  deviceType           String
+  deviceName           String
+  email                String    @unique
+  password             String
+  dob                  String
+  mobileNumber         String
+  isVerified           Boolean   @default(false)
+  hashedOtp            String?
+  otpExpiresAt         DateTime?
+  isBanned             Boolean   @default(false)
+  profilePhoto         String
+  gender               String
+  latitude             String?
+  longitude            String?
+  bio                  String?
+  isPhnConfirmed       Boolean   @default(false)
+  isGovtProofConfirmed Boolean   @default(false)
 
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

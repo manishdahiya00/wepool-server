@@ -1,6 +1,8 @@
 import { Request, Response, Router } from "express";
 import {
     allUsers,
+    editProfile,
+    editProfileImage,
     getUser,
     userCreatedRides,
 } from "../controllers/user.controller";
@@ -10,6 +12,7 @@ import { formatZodError } from "../utils/zod.error";
 import { getUserById } from "../services/user.service";
 import db from "../config/database";
 import logger from "../config/logger";
+import multer from "multer";
 
 const userRouter = Router();
 
@@ -195,6 +198,100 @@ userRouter.get("/all", async (req: Request, res: Response) => {
         });
     }
 });
+
+/** @swagger
+ * /user/editProfile:
+ *   put:
+ *     summary: Edit user profile
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               mobileNumber:
+ *                 type: string
+ *               dob:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+userRouter.put("/editProfile", async (req: Request, res: Response) => {
+    try {
+        await editProfile(req, res);
+    } catch (error) {
+        logger.error("Error in editProfile:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+});
+
+/** @swagger
+ *  /user/editProfileImage:
+ *    put:
+ *      summary: Edit user profile image
+ *      tags: [User]
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                profilePhoto:
+ *                  type: string
+ *                  format: binary
+ *      responses:
+ *        200:
+ *          description: Profile image updated successfully
+ *        400:
+ *          description: Bad request
+ *        401:
+ *          description: Unauthorized
+ *        404:
+ *          description: User not found
+ *        500:
+ *          description: Internal Server Error
+ */
+const upload = multer({ dest: "uploads/" });
+userRouter.put(
+    "/editProfileImage",
+    upload.single("profilePhoto"),
+    async (req: Request, res: Response) => {
+        try {
+            await editProfileImage(req, res);
+        } catch (error) {
+            logger.error("Error in editProfileImage:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
+        }
+    },
+);
 
 const userRoutes = Router().use("/user", authenticateUser, userRouter);
 

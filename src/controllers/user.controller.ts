@@ -1,10 +1,15 @@
 import logger from "../config/logger";
 import {
+    editProfileImageService,
+    editProfileService,
     getAllUsers,
     getUserById,
     getUserCreatedRides,
 } from "../services/user.service";
 import { Request, Response } from "express";
+import { editProfileSchema } from "../validations/user.validation";
+import { formatZodError } from "../utils/zod.error";
+import fs from "node:fs";
 
 export const getUser = async (req: Request, res: Response) => {
     try {
@@ -31,7 +36,50 @@ export const getUser = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "User details fetched successfully",
-            user,
+            user: {
+                ...user,
+                isProfileUrl: user.profilePhoto ? true : false,
+                isEmailConfirmed: user.isVerified,
+                isBioAvailable: user.bio ? true : false,
+                isPhnConfirmed: user.isPhnConfirmed ?? false,
+                isGovtProofConfirmed: user.isGovtProofConfirmed ?? false,
+                rateAppUrl:
+                    "https://play.google.com/store/apps/details?id=com.arun.wepool",
+                referUrl:
+                    "https://play.google.com/store/apps/details?id=com.arun.wepool",
+            },
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const editProfile = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            res.status(400).json({
+                status: false,
+                message: "UserId is missing",
+            });
+            return;
+        }
+        const result = editProfileSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: formatZodError(result.error),
+            });
+            return;
+        }
+        await editProfileService(userId, result.data);
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
         });
     } catch (error) {
         logger.error(error);
@@ -102,6 +150,45 @@ export const allUsers = async (req: Request, res: Response) => {
                 limit,
                 totalPages: Math.ceil(total / limit),
             },
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+export const editProfileImage = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "UserId is missing",
+            });
+        }
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded",
+            });
+        }
+
+        if (!req.file.mimetype.startsWith("image/")) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) logger.error("Error deleting temp file:", err);
+            });
+            return res.status(400).json({
+                success: false,
+                message: "Only image files are supported.",
+            });
+        }
+        await editProfileImageService(userId, req.file);
+
+        res.status(200).json({
+            success: true,
+            message: "Profile image updated successfully",
         });
     } catch (error) {
         logger.error(error);

@@ -92,3 +92,11 @@ export interface ICreateStopOvers {
     rideId: string;
     titles: string[];
 }
+
+export interface IEditProfileData {
+    fullName?: string;
+    mobileNumber?: string;
+    dob?: string;
+    bio?: string;
+    email?: string;
+}

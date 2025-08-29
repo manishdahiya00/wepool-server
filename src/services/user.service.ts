@@ -1,8 +1,10 @@
 import createHttpError from "http-errors";
 import db from "../config/database";
-import { ICreateUser } from "../types";
+import { ICreateUser, IEditProfileData } from "../types";
 import logger from "../config/logger";
 import { User } from "@prisma/client";
+import cloudinary, { getPublicIdFromUrl } from "../utils/cloudinary";
+import fs from "node:fs";
 
 export async function createUser({
     fullName,
@@ -168,7 +170,10 @@ export const getUserById = async (userId: string) => {
                 gender: true,
                 mobileNumber: true,
                 dob: true,
+                bio: true,
                 profilePhoto: true,
+                isPhnConfirmed: true,
+                isGovtProofConfirmed: true,
             },
         });
         return user;
@@ -270,5 +275,66 @@ export const getAllUsers = async (page: number, limit: number) => {
     } catch (error) {
         logger.error(error);
         throw createHttpError(500, "Error fetching all users");
+    }
+};
+
+export const editProfileService = async (
+    userId: string,
+    data: IEditProfileData,
+) => {
+    try {
+        const user = await db.user.update({
+            where: { id: userId },
+            data,
+        });
+        return user;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error updating user");
+    }
+};
+export const editProfileImageService = async (
+    userId: string,
+    file: Express.Multer.File,
+) => {
+    try {
+        // Fetch user to check old profile pic
+        const existingUser = await db.user.findUnique({
+            where: { id: userId },
+        });
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: "profile_pics",
+            transformation: [{ width: 300, height: 300, crop: "fill" }],
+        });
+
+        // Delete local temp file
+        fs.unlink(file.path, (err) => {
+            if (err) logger.error("Error deleting temp file:", err);
+        });
+
+        // Delete old Cloudinary image if exists
+        if (existingUser?.profilePhoto) {
+            const publicId = getPublicIdFromUrl(existingUser.profilePhoto);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId).catch((err) => {
+                    logger.error("Error deleting old Cloudinary image:", err);
+                });
+            }
+        }
+
+        // Update DB with Cloudinary URL
+        const user = await db.user.update({
+            where: { id: userId },
+            data: {
+                profilePhoto: result.secure_url,
+            },
+        });
+
+        return user;
+    } catch (error) {
+        logger.error(error);
+        throw createHttpError(500, "Error updating user profile image");
     }
 };
