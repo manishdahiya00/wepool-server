@@ -162,6 +162,7 @@ export const getUserById = async (userId: string) => {
     try {
         const user = await db.user.findUnique({
             where: { id: userId },
+
             select: {
                 id: true,
                 fullName: true,
@@ -174,6 +175,11 @@ export const getUserById = async (userId: string) => {
                 profilePhoto: true,
                 isPhnConfirmed: true,
                 isGovtProofConfirmed: true,
+                _count: {
+                    select: {
+                        vehicles: true,
+                    },
+                },
             },
         });
         return user;

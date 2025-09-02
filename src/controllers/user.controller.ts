@@ -37,12 +37,21 @@ export const getUser = async (req: Request, res: Response) => {
             success: true,
             message: "User details fetched successfully",
             user: {
-                ...user,
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                isVerified: user.isVerified,
+                gender: user.gender,
+                mobileNumber: user.mobileNumber,
+                dob: user.dob,
+                bio: user.bio,
+                profilePhoto: user.profilePhoto,
                 isProfileUrl: user.profilePhoto ? true : false,
                 isEmailConfirmed: user.isVerified,
                 isBioAvailable: user.bio ? true : false,
                 isPhnConfirmed: user.isPhnConfirmed ?? false,
                 isGovtProofConfirmed: user.isGovtProofConfirmed ?? false,
+                isVehicleAvailable: user._count.vehicles > 0 ? true : false,
                 rateAppUrl:
                     "https://play.google.com/store/apps/details?id=com.arun.wepool",
                 referUrl:
