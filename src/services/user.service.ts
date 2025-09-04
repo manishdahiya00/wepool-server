@@ -345,3 +345,48 @@ export const editProfileImageService = async (
         throw createHttpError(500, "Error updating user profile image");
     }
 };
+
+export const verifyAadharService = async (
+    userId: string,
+    file: Express.Multer.File,
+) => {
+    try {
+        // Fetch user to check old profile pic
+        const existingUser = await db.user.findUnique({
+            where: { id: userId },
+        });
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: "aadhar_docs",
+            transformation: [{ width: 600, height: 400, crop: "fit" }],
+        });
+
+        fs.unlink(file.path, (err) => {
+            if (err) logger.error("Error deleting temp file:", err);
+        });
+
+        // Delete old Cloudinary image if exists
+        if (existingUser?.aadharUrl) {
+            const publicId = getPublicIdFromUrl(existingUser.aadharUrl);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId).catch((err) => {
+                    logger.error("Error deleting old Cloudinary image:", err);
+                });
+            }
+        }
+
+        // Update DB with Cloudinary URL
+        const user = await db.user.update({
+            where: { id: userId },
+            data: {
+                aadharUrl: result.secure_url,
+            },
+        });
+
+        return user;
+    } catch (error: any) {
+        logger.error(error.stack);
+        throw createHttpError(500, "Error uploading Aadhar document");
+    }
+};

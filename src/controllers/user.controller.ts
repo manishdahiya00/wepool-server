@@ -5,6 +5,7 @@ import {
     getAllUsers,
     getUserById,
     getUserCreatedRides,
+    verifyAadharService,
 } from "../services/user.service";
 import { Request, Response } from "express";
 import { editProfileSchema } from "../validations/user.validation";
@@ -168,6 +169,7 @@ export const allUsers = async (req: Request, res: Response) => {
         });
     }
 };
+
 export const editProfileImage = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id;
@@ -198,6 +200,46 @@ export const editProfileImage = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Profile image updated successfully",
+        });
+    } catch (error: any) {
+        logger.error(error.stack);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const verifyAadhar = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "UserId is missing",
+            });
+        }
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded",
+            });
+        }
+
+        if (!req.file.mimetype.startsWith("image/")) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) logger.error("Error deleting temp file:", err);
+            });
+            return res.status(400).json({
+                success: false,
+                message: "Only image files are supported.",
+            });
+        }
+        await verifyAadharService(userId, req.file);
+
+        res.status(200).json({
+            success: true,
+            message: "Aadhar uploaded successfully",
         });
     } catch (error: any) {
         logger.error(error.stack);

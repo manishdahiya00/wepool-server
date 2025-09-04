@@ -27,6 +27,7 @@ model User {
   latitude             String?
   longitude            String?
   bio                  String?
+  aadharUrl            String?
   isPhnConfirmed       Boolean   @default(false)
   isGovtProofConfirmed Boolean   @default(false)
 

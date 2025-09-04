@@ -5,6 +5,7 @@ import {
     editProfileImage,
     getUser,
     userCreatedRides,
+    verifyAadhar,
 } from "../controllers/user.controller";
 import { authenticateUser } from "../middlewares/authenticate.middleware";
 import { z } from "zod";
@@ -290,6 +291,51 @@ userRouter.put(
             await editProfileImage(req, res);
         } catch (error: any) {
             logger.error("Error in editProfileImage:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
+        }
+    },
+);
+
+/** @swagger
+ *  /user/aadhar/verify:
+ *    post:
+ *      summary: Verify Aadhar card
+ *      tags: [User]
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                aadhar:
+ *                  type: string
+ *                  format: binary
+ *      responses:
+ *        200:
+ *          description: Aadhar card verified successfully
+ *        400:
+ *          description: Bad request
+ *        401:
+ *          description: Unauthorized
+ *        404:
+ *          description: User not found
+ *        500:
+ *          description: Internal Server Error
+ */
+userRouter.post(
+    "/aadhar/verify",
+    upload.single("aadhar"),
+    async (req: Request, res: Response) => {
+        try {
+            await verifyAadhar(req, res);
+        } catch (error: any) {
+            logger.error("Error in verifyAadhar:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",
