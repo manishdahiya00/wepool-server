@@ -390,3 +390,37 @@ export const verifyAadharService = async (
         throw createHttpError(500, "Error uploading Aadhar document");
     }
 };
+
+export const deleteProfileImageService = async (userId: string) => {
+    try {
+        // Fetch user to check old profile pic
+        const existingUser = await db.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!existingUser?.profilePhoto) {
+            throw createHttpError(400, "No profile image to delete");
+        }
+
+        // Delete old Cloudinary image if exists
+        const publicId = getPublicIdFromUrl(existingUser.profilePhoto);
+        if (publicId) {
+            await cloudinary.uploader.destroy(publicId).catch((err) => {
+                logger.error("Error deleting Cloudinary image:", err);
+            });
+        }
+
+        // Update DB to remove profile photo URL
+        const user = await db.user.update({
+            where: { id: userId },
+            data: {
+                profilePhoto: "",
+            },
+        });
+
+        return user;
+    } catch (error: any) {
+        logger.error(error.stack);
+        throw createHttpError(500, "Error deleting user profile image");
+    }
+};

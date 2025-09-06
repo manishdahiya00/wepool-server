@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import {
     allUsers,
+    deleteProfileImage,
     editProfile,
     editProfileImage,
     getUser,
@@ -336,6 +337,40 @@ userRouter.post(
             await verifyAadhar(req, res);
         } catch (error: any) {
             logger.error("Error in verifyAadhar:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
+        }
+    },
+);
+
+/** @swagger
+ *  /user/deleteProfileImage:
+ *    delete:
+ *      summary: Delete user profile image
+ *      tags: [User]
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          description: Profile image deleted successfully
+ *        400:
+ *          description: Bad request
+ *        401:
+ *          description: Unauthorized
+ *        404:
+ *          description: User not found
+ *        500:
+ *          description: Internal Server Error
+ */
+userRouter.delete(
+    "/deleteProfileImage",
+    async (req: Request, res: Response) => {
+        try {
+            await deleteProfileImage(req, res);
+        } catch (error: any) {
+            logger.error("Error in deleteProfileImage:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",

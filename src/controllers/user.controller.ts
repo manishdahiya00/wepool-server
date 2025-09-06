@@ -1,5 +1,6 @@
 import logger from "../config/logger";
 import {
+    deleteProfileImageService,
     editProfileImageService,
     editProfileService,
     getAllUsers,
@@ -240,6 +241,36 @@ export const verifyAadhar = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             message: "Aadhar uploaded successfully",
+        });
+    } catch (error: any) {
+        logger.error(error.stack);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export const deleteProfileImage = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "UserId is missing",
+            });
+        }
+        if (req.user?.profilePhoto === "" || req.user?.profilePhoto === null) {
+            return res.status(400).json({
+                success: false,
+                message: "No profile image to delete",
+            });
+        }
+        await deleteProfileImageService(userId);
+
+        res.status(200).json({
+            success: true,
+            message: "Profile image deleted successfully",
         });
     } catch (error: any) {
         logger.error(error.stack);
